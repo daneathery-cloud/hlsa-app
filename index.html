@@ -1,0 +1,544 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Healthcare Leaders of San Antonio</title>
+<meta name="description" content="Events, sponsors, referral partners and the newsletter for Healthcare Leaders of San Antonio.">
+
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#1E3864">
+<link rel="icon" href="icons/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="HLSA">
+<meta name="mobile-web-app-capable" content="yes">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,500&display=swap" rel="stylesheet">
+
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    margin: 0;
+    height: 100%;
+    background: #F6F5F2;
+    color: #1C2230;
+    font-family: 'Public Sans', system-ui, -apple-system, sans-serif;
+    overscroll-behavior: none;
+  }
+  h1, h2, .display { font-family: 'Sora', system-ui, sans-serif; }
+  a { color: #1E3864; }
+  ::-webkit-scrollbar { width: 0; height: 0; }
+  button { font-family: inherit; cursor: pointer; }
+  button:focus-visible, a:focus-visible, input:focus-visible {
+    outline: 2px solid #1E3864;
+    outline-offset: 2px;
+  }
+
+  .app-shell {
+    height: 100dvh;
+    width: 100%;
+    max-width: 560px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    background: #F6F5F2;
+    overflow: hidden;
+  }
+
+  /* Header */
+  .screen-header {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    padding: calc(env(safe-area-inset-top, 0px) + 14px) 20px 14px;
+    background: #FFFFFF;
+    border-bottom: 1px solid #E9E7E1;
+  }
+  .screen-header img { height: 26px; width: auto; }
+
+  .screen-body {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 20px 20px 24px;
+  }
+  .panel { display: none; flex-direction: column; gap: 20px; }
+  .panel.active { display: flex; }
+
+  .section-title { margin: 0 0 4px; font-size: 22px; font-weight: 700; color: #1E3864; }
+  .section-sub { font-size: 14px; color: #6B7280; margin-bottom: 4px; }
+
+  .tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #CD2027;
+  }
+
+  .hero-card {
+    background: #1E3864;
+    border-radius: 18px;
+    padding: 20px;
+    color: #FFFFFF;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .hero-pill {
+    align-self: flex-start;
+    background: #CD2027;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 5px 10px;
+    border-radius: 100px;
+  }
+  .hero-title { font-family: 'Sora', sans-serif; font-size: 19px; font-weight: 700; }
+  .hero-meta { display: flex; flex-direction: column; gap: 8px; font-size: 14px; color: #D7DEEA; }
+  .hero-meta .row { display: flex; align-items: center; gap: 8px; }
+  .hero-actions { display: flex; gap: 10px; }
+  .btn-primary {
+    background: #CD2027; color: #FFFFFF; border: none; border-radius: 100px;
+    padding: 11px 20px; font-size: 14px; font-weight: 700; min-height: 44px; font-family: inherit;
+  }
+  .btn-ghost {
+    background: rgba(255,255,255,0.12); color: #FFFFFF; border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 100px; padding: 11px 18px; font-size: 13px; font-weight: 700; min-height: 44px; font-family: inherit;
+  }
+
+  .shortcut-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; }
+  .shortcut {
+    display: flex; flex-direction: column; align-items: flex-start; gap: 10px;
+    background: #FFFFFF; border: 1px solid #E9E7E1; border-radius: 14px; padding: 14px;
+    min-height: 44px; text-align: left; font-family: inherit; cursor: pointer;
+  }
+  .shortcut span { font-size: 14px; font-weight: 600; color: #1C2230; }
+
+  .list-title { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+  .list-title .h { font-size: 15px; font-weight: 700; color: #1C2230; }
+  .see-all { background: none; border: none; color: #1E3864; font-size: 13px; font-weight: 700; padding: 6px 0; font-family: inherit; cursor: pointer; }
+
+  .post-card, .partner-card, .community-row {
+    background: #FFFFFF; border: 1px solid #E9E7E1; border-radius: 14px; padding: 14px;
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .post-card .title { font-size: 14px; font-weight: 700; line-height: 1.35; color: #1C2230; }
+  .post-card.skeleton { gap: 8px; }
+  .skeleton-line {
+    height: 11px; border-radius: 4px; background: #ECEBE6;
+    animation: pulse 1.3s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+  .placeholder-box {
+    border: 1.5px dashed #C7CAD1; border-radius: 14px; padding: 18px; text-align: center;
+    color: #8A93A3; font-size: 13px; line-height: 1.5;
+  }
+  .logo-box {
+    background: #FFFFFF; border: 1.5px dashed #C7CAD1; border-radius: 14px; height: 64px;
+    display: flex; align-items: center; justify-content: center; color: #B7BCC6; font-size: 12px; font-weight: 700;
+  }
+  .tier-label { font-size: 13px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: #8A93A3; margin-bottom: 10px; }
+  .tier-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; }
+
+  .community-row { flex-direction: row; align-items: center; gap: 10px; padding: 12px 14px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: #CD2027; flex-shrink: 0; }
+  .community-row span { font-size: 13px; font-weight: 600; }
+
+  .filter-row { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 2px; }
+  .filter-chip {
+    background: #FFFFFF; color: #525C6B; border: 1px solid #E9E7E1; border-radius: 100px;
+    padding: 8px 14px; font-size: 12.5px; font-weight: 700; white-space: nowrap; min-height: 36px;
+    font-family: inherit; cursor: pointer; flex-shrink: 0;
+  }
+  .filter-chip.active { background: #1E3864; color: #FFFFFF; border-color: #1E3864; }
+
+  .partner-card .p-name { font-size: 14px; font-weight: 700; color: #1C2230; }
+  .partner-card .p-sub { font-size: 12px; font-weight: 600; color: #CD2027; margin-top: 2px; }
+  .partner-card .p-blurb { font-size: 13px; line-height: 1.5; color: #525C6B; }
+  .partner-card .p-site {
+    display: flex; align-items: center; gap: 6px; margin-top: 2px; font-size: 12px; font-weight: 700;
+    color: #1E3864; text-decoration: none; width: fit-content;
+  }
+
+  .newsletter-card {
+    background: #1E3864; border-radius: 18px; padding: 20px; color: #FFFFFF;
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .newsletter-card .h { font-family: 'Sora', sans-serif; font-size: 18px; font-weight: 700; }
+  .newsletter-card p { margin: 0; font-size: 13px; color: #D7DEEA; line-height: 1.5; }
+  .newsletter-card input {
+    background: #FFFFFF; border: none; border-radius: 10px; padding: 12px 14px; font-size: 14px; color: #1C2230; font-family: inherit;
+  }
+
+  /* Tab bar */
+  .tab-bar {
+    flex-shrink: 0; display: flex; align-items: stretch; justify-content: space-around;
+    background: #FFFFFF; border-top: 1px solid #E9E7E1;
+    padding: 6px 4px calc(env(safe-area-inset-bottom, 0px) + 8px);
+  }
+  .tab-btn {
+    background: none; border: none; display: flex; flex-direction: column; align-items: center; gap: 4px;
+    padding: 6px 8px; min-height: 44px; color: #A2A8B4; font-family: inherit; cursor: pointer;
+  }
+  .tab-btn.active { color: #1E3864; }
+  .tab-btn span { font-size: 10.5px; font-weight: 700; }
+
+  .offline-banner {
+    display: none;
+    flex-shrink: 0;
+    background: #FCEEEE;
+    color: #8A2A2A;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+    padding: 6px 12px;
+  }
+  .offline-banner.show { display: block; }
+</style>
+</head>
+<body>
+
+<div class="app-shell">
+  <div class="offline-banner" id="offlineBanner">You're offline &mdash; showing the last saved content.</div>
+
+  <div class="screen-header">
+    <img src="assets/logo.png" alt="Healthcare Leaders of San Antonio" />
+  </div>
+
+  <div class="screen-body">
+
+    <!-- HOME -->
+    <div class="panel active" id="panel-home">
+      <div>
+        <div class="tag" style="margin-bottom:6px; display:block;">Welcome to HLSA</div>
+        <h1 class="display" style="margin:0; font-size:26px; line-height:1.2; font-weight:700; color:#1E3864;">Connecting San Antonio's healthcare leaders.</h1>
+      </div>
+
+      <div class="hero-card">
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+          <span class="hero-pill">Next Mixer</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity="0.7"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        </div>
+        <div class="hero-title">Monthly Networking Mixer</div>
+        <div class="hero-meta">
+          <div class="row"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9FB1D6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span>Every 2nd Thursday, monthly</span></div>
+          <div class="row"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9FB1D6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg><span>5:00&ndash;8:00 PM</span></div>
+          <div class="row"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9FB1D6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg><span>Marriott San Antonio Airport</span></div>
+        </div>
+        <button class="btn-primary" style="align-self:flex-start;" onclick="showTab('events')">RSVP &amp; details</button>
+      </div>
+
+      <div>
+        <div class="list-title"><span class="h">Explore</span></div>
+        <div class="shortcut-grid">
+          <button class="shortcut" onclick="showTab('events')">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1E3864" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+            <span>Events</span>
+          </button>
+          <button class="shortcut" onclick="showTab('sponsors')">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1E3864" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6-5.4-3-5.4 3 1.2-6-4.5-4.2 6.1-.7L12 3Z"/></svg>
+            <span>Sponsors</span>
+          </button>
+          <button class="shortcut" onclick="showTab('partners')">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1E3864" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="3"/><circle cx="17" cy="9" r="2.6"/><path d="M2.5 19.5c.6-3 2.6-5 5.5-5s5 2 5.5 5M14.8 14.6c2.2.3 3.7 2 4.2 4.4"/></svg>
+            <span>Referral Partners</span>
+          </button>
+          <button class="shortcut" onclick="showTab('news')">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1E3864" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h13a2 2 0 0 1 2 2v13a1 1 0 0 1-1.7.7L15 17H6a2 2 0 0 1-2-2V4Z"/><path d="M8 8h8M8 11.5h8M8 15h4"/></svg>
+            <span>Newsletter &amp; Posts</span>
+          </button>
+        </div>
+      </div>
+
+      <div>
+        <div class="list-title">
+          <span class="h">Latest from the blog</span>
+          <button class="see-all" onclick="showTab('news')">See all</button>
+        </div>
+        <div id="homePostList" style="display:flex; flex-direction:column; gap:10px;">
+          <div class="post-card skeleton"><div class="skeleton-line" style="width:70px;"></div><div class="skeleton-line" style="width:90%;"></div></div>
+          <div class="post-card skeleton"><div class="skeleton-line" style="width:70px;"></div><div class="skeleton-line" style="width:80%;"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EVENTS -->
+    <div class="panel" id="panel-events">
+      <div>
+        <h1 class="section-title">Events</h1>
+        <div class="section-sub">Monthly mixers &amp; special occasions</div>
+      </div>
+
+      <div class="hero-card">
+        <span class="hero-pill" style="background:#CD2027;">Recurring</span>
+        <div class="hero-title">Monthly Networking Mixer</div>
+        <div class="hero-meta">
+          <div class="row"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9FB1D6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span>Every 2nd Thursday, 5&ndash;8 PM</span></div>
+          <div class="row"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9FB1D6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg><span>Marriott San Antonio Airport</span></div>
+        </div>
+        <div class="hero-actions">
+          <a class="btn-primary" style="text-decoration:none; display:inline-flex; align-items:center;" href="https://healthcareleaderssa.com" target="_blank" rel="noopener">RSVP</a>
+          <button class="btn-ghost">Add to calendar</button>
+        </div>
+      </div>
+
+      <div>
+        <div class="list-title"><span class="h">2026 spotlight events</span></div>
+        <div class="placeholder-box">Each month HLSA spotlights a different corner of healthcare. Full spotlight calendar coming soon &mdash; check back for dates.</div>
+      </div>
+
+      <div>
+        <div class="list-title"><span class="h">Community we support</span></div>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <div class="community-row"><div class="dot"></div><span>Walk to End Alzheimer's</span></div>
+          <div class="community-row"><div class="dot"></div><span>Ronald McDonald House Charities SA</span></div>
+          <div class="community-row"><div class="dot"></div><span>Morgan's Inclusion Initiative</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SPONSORS -->
+    <div class="panel" id="panel-sponsors">
+      <div>
+        <h1 class="section-title">Sponsors</h1>
+        <div class="section-sub">The organizations that make HLSA possible</div>
+      </div>
+
+      <div>
+        <div class="tier-label">Presenting Sponsor</div>
+        <div class="tier-grid"><div class="logo-box">LOGO</div><div class="logo-box">LOGO</div></div>
+      </div>
+      <div>
+        <div class="tier-label">Gold Sponsors</div>
+        <div class="tier-grid"><div class="logo-box">LOGO</div><div class="logo-box">LOGO</div></div>
+      </div>
+      <div>
+        <div class="tier-label">Silver Sponsors</div>
+        <div class="tier-grid"><div class="logo-box">LOGO</div><div class="logo-box">LOGO</div></div>
+      </div>
+
+      <div class="placeholder-box">Ready for your 2026 sponsor roster &mdash; drop in logos, tiers and links here.</div>
+    </div>
+
+    <!-- PARTNERS -->
+    <div class="panel" id="panel-partners">
+      <div>
+        <h1 class="section-title">Referral Partners</h1>
+        <div class="section-sub">Trusted businesses in the HLSA network</div>
+      </div>
+
+      <div class="filter-row">
+        <button class="filter-chip active" data-filter="all" onclick="setPartnerFilter('all', this)">All</button>
+        <button class="filter-chip" data-filter="healthcare" onclick="setPartnerFilter('healthcare', this)">Healthcare Services</button>
+        <button class="filter-chip" data-filter="finance" onclick="setPartnerFilter('finance', this)">Finance &amp; Business</button>
+        <button class="filter-chip" data-filter="marketing" onclick="setPartnerFilter('marketing', this)">Marketing</button>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:10px;" id="partner-list">
+        <div class="partner-card" data-category="healthcare">
+          <div class="p-name">MR3 Health</div><div class="p-sub">Remote Patient Monitoring</div>
+          <div class="p-blurb">Remote patient monitoring technology and service that helps physicians catch chronic-disease complications before they become acute events.</div>
+          <a class="p-site" href="https://mr3health.com" target="_blank" rel="noopener"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1E3864" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3h7v7"/><path d="M10 14 21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg>mr3health.com</a>
+        </div>
+        <div class="partner-card" data-category="finance">
+          <div class="p-name">Wave Online</div><div class="p-sub">Revenue Cycle Management</div>
+          <div class="p-blurb">25 years optimizing medical coding, billing and HCC risk adjustment so healthcare organizations are reimbursed accurately and on time.</div>
+          <a class="p-site" href="https://wavehca.com" target="_blank" rel="noopener"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1E3864" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3h7v7"/><path d="M10 14 21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg>wavehca.com</a>
+        </div>
+        <div class="partner-card" data-category="finance">
+          <div class="p-name">Gary Meyn &mdash; Vested Business Brokers</div><div class="p-sub">Business Broker</div>
+          <div class="p-blurb">Senior broker guiding healthcare business owners through buying, selling and business transitions across Texas.</div>
+          <a class="p-site" href="https://www.vestedbb.com/texas-business-broker-gary+meyn-profile-id29258/" target="_blank" rel="noopener"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1E3864" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3h7v7"/><path d="M10 14 21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg>vestedbb.com</a>
+        </div>
+        <div class="partner-card" data-category="healthcare">
+          <div class="p-name">Orchestra Health</div><div class="p-sub">Surgical Readiness Platform</div>
+          <div class="p-blurb">AI-driven preoperative platform that cuts patient-readiness delays and helps surgical teams reduce cancellations.</div>
+          <a class="p-site" href="https://orchestrahealth.com" target="_blank" rel="noopener"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1E3864" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3h7v7"/><path d="M10 14 21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg>orchestrahealth.com</a>
+        </div>
+        <div class="partner-card" data-category="healthcare">
+          <div class="p-name">Guiding Light Hospice</div><div class="p-sub">Hospice &amp; Home Care</div>
+          <div class="p-blurb">Compassionate, 24/7 hospice and inpatient care serving San Antonio and Laredo families. CHAP-accredited.</div>
+          <a class="p-site" href="https://www.guidinghospice.com" target="_blank" rel="noopener"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1E3864" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3h7v7"/><path d="M10 14 21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg>guidinghospice.com</a>
+        </div>
+        <div class="partner-card" data-category="healthcare">
+          <div class="p-name">Puckett PT</div><div class="p-sub">Sports Physical Therapy</div>
+          <div class="p-blurb">One-on-one, sport-specific physical therapy from Doctors of PT, built to get athletes back to competition stronger.</div>
+          <a class="p-site" href="https://www.puckettpt.com" target="_blank" rel="noopener"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1E3864" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3h7v7"/><path d="M10 14 21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg>puckettpt.com</a>
+        </div>
+        <div class="partner-card" data-category="finance">
+          <div class="p-name">Ascent Strategic Finance</div><div class="p-sub">Fractional CFO Services</div>
+          <div class="p-blurb">Jessica Hodges, CPA, brings executive-level financial leadership to growing businesses without the cost of a full-time CFO.</div>
+          <a class="p-site" href="https://www.ascentstrategicfinance.com" target="_blank" rel="noopener"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1E3864" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3h7v7"/><path d="M10 14 21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg>ascentstrategicfinance.com</a>
+        </div>
+        <div class="partner-card" data-category="healthcare">
+          <div class="p-name">Nurses Etc Staffing</div><div class="p-sub">Healthcare Staffing</div>
+          <div class="p-blurb">San Antonio-based nurse and allied-health staffing agency matching healthcare professionals with facilities since 2000.</div>
+          <a class="p-site" href="https://www.nursesetc.net" target="_blank" rel="noopener"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1E3864" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3h7v7"/><path d="M10 14 21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg>nursesetc.net</a>
+        </div>
+        <div class="partner-card" data-category="marketing">
+          <div class="p-name">Macro Integrated Marketing</div><div class="p-sub">Marketing &amp; Creative</div>
+          <div class="p-blurb">Full-service strategy, branding, media buying and content production agency for growing brands.</div>
+          <a class="p-site" href="https://www.macrointegrated.com" target="_blank" rel="noopener"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1E3864" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3h7v7"/><path d="M10 14 21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg>macrointegrated.com</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- NEWS -->
+    <div class="panel" id="panel-news">
+      <div>
+        <h1 class="section-title">Newsletter &amp; Posts</h1>
+        <div class="section-sub">What's new from HLSA</div>
+      </div>
+
+      <div class="newsletter-card">
+        <div class="h">HLSA Newsletter</div>
+        <p>Monthly updates on events, member spotlights and industry insight &mdash; straight to your inbox.</p>
+        <input type="email" placeholder="you@company.com" id="newsletterEmail" />
+        <div class="hero-actions">
+          <button class="btn-primary" style="flex:1;" onclick="subscribeNewsletter()">Subscribe</button>
+          <a class="btn-ghost" style="text-decoration:none; display:inline-flex; align-items:center;" href="https://healthcareleaderssa.com" target="_blank" rel="noopener">Back issues</a>
+        </div>
+      </div>
+
+      <div>
+        <div class="list-title"><span class="h">Recent posts</span></div>
+        <div id="newsPostList" style="display:flex; flex-direction:column; gap:10px;">
+          <div class="post-card skeleton"><div class="skeleton-line" style="width:70px;"></div><div class="skeleton-line" style="width:90%;"></div></div>
+          <div class="post-card skeleton"><div class="skeleton-line" style="width:70px;"></div><div class="skeleton-line" style="width:80%;"></div></div>
+          <div class="post-card skeleton"><div class="skeleton-line" style="width:70px;"></div><div class="skeleton-line" style="width:95%;"></div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="tab-bar">
+    <button class="tab-btn active" id="tabbtn-home" onclick="showTab('home')">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"/></svg>
+      <span>Home</span>
+    </button>
+    <button class="tab-btn" id="tabbtn-events" onclick="showTab('events')">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+      <span>Events</span>
+    </button>
+    <button class="tab-btn" id="tabbtn-sponsors" onclick="showTab('sponsors')">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6-5.4-3-5.4 3 1.2-6-4.5-4.2 6.1-.7L12 3Z"/></svg>
+      <span>Sponsors</span>
+    </button>
+    <button class="tab-btn" id="tabbtn-partners" onclick="showTab('partners')">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="3"/><circle cx="17" cy="9" r="2.6"/><path d="M2.5 19.5c.6-3 2.6-5 5.5-5s5 2 5.5 5M14.8 14.6c2.2.3 3.7 2 4.2 4.4"/></svg>
+      <span>Partners</span>
+    </button>
+    <button class="tab-btn" id="tabbtn-news" onclick="showTab('news')">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h13a2 2 0 0 1 2 2v13a1 1 0 0 1-1.7.7L15 17H6a2 2 0 0 1-2-2V4Z"/><path d="M8 8h8M8 11.5h8M8 15h4"/></svg>
+      <span>News</span>
+    </button>
+  </div>
+</div>
+
+<script>
+  function showTab(id) {
+    document.querySelectorAll('.panel').forEach(function (p) { p.classList.remove('active'); });
+    document.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.remove('active'); });
+    document.getElementById('panel-' + id).classList.add('active');
+    document.getElementById('tabbtn-' + id).classList.add('active');
+    document.querySelector('.screen-body').scrollTop = 0;
+  }
+
+  function setPartnerFilter(cat, btn) {
+    document.querySelectorAll('.filter-chip').forEach(function (c) { c.classList.remove('active'); });
+    btn.classList.add('active');
+    document.querySelectorAll('#partner-list .partner-card').forEach(function (card) {
+      card.style.display = (cat === 'all' || card.dataset.category === cat) ? 'flex' : 'none';
+    });
+  }
+
+  function subscribeNewsletter() {
+    var input = document.getElementById('newsletterEmail');
+    if (input.value) {
+      window.open('https://healthcareleaderssa.com', '_blank', 'noopener');
+    } else {
+      input.focus();
+    }
+  }
+
+  // --- Live posts from the HLSA WordPress site ---
+  function escapeHtml(str) {
+    var div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function renderPosts(containerId, posts) {
+    var el = document.getElementById(containerId);
+    el.innerHTML = '';
+    posts.forEach(function (post) {
+      var card = document.createElement('a');
+      card.className = 'post-card';
+      card.style.textDecoration = 'none';
+      card.href = post.link;
+      card.target = '_blank';
+      card.rel = 'noopener';
+      card.innerHTML =
+        '<span class="tag">' + escapeHtml(post.tag) + '</span>' +
+        '<span class="title">' + escapeHtml(post.title) + '</span>';
+      el.appendChild(card);
+    });
+  }
+
+  function decodeEntities(str) {
+    var el = document.createElement('textarea');
+    el.innerHTML = str;
+    return el.value;
+  }
+
+  fetch('https://healthcareleaderssa.com/wp-json/wp/v2/posts?per_page=5&_fields=title,link,categories,_embedded&_embed=wp:term')
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      var posts = data.map(function (p) {
+        var cats = (p._embedded && p._embedded['wp:term'] && p._embedded['wp:term'][0]) || [];
+        var tag = cats.length ? cats[0].name : 'HLSA';
+        return { title: decodeEntities(p.title.rendered), link: p.link, tag: tag };
+      });
+      if (posts.length) {
+        renderPosts('newsPostList', posts);
+        renderPosts('homePostList', posts.slice(0, 2));
+      }
+    })
+    .catch(function () {
+      var fallback = [
+        { tag: 'Business', title: 'Business Exit Planning: A Concise Overview', link: 'https://healthcareleaderssa.com' },
+        { tag: 'Healthcare', title: 'Will Your Healthcare Business FAIL in 2027?', link: 'https://healthcareleaderssa.com' },
+        { tag: 'Finance', title: 'The Difference Between Reporting the Numbers and Understanding Them', link: 'https://healthcareleaderssa.com' },
+        { tag: 'Networking', title: 'Some thoughts on our newsletter and our networking philosophy…', link: 'https://healthcareleaderssa.com' },
+        { tag: 'Public Interest', title: 'America: Democracy or a Republic?', link: 'https://healthcareleaderssa.com' }
+      ];
+      renderPosts('newsPostList', fallback);
+      renderPosts('homePostList', fallback.slice(0, 2));
+    });
+
+  // --- Offline banner ---
+  function updateOnlineStatus() {
+    document.getElementById('offlineBanner').classList.toggle('show', !navigator.onLine);
+  }
+  window.addEventListener('online', updateOnlineStatus);
+  window.addEventListener('offline', updateOnlineStatus);
+  updateOnlineStatus();
+
+  // --- Service worker ---
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('sw.js').catch(function () {});
+    });
+  }
+</script>
+</body>
+</html>

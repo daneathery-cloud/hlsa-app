@@ -1,0 +1,16 @@
+{
+  "name": "Healthcare Leaders of San Antonio",
+  "short_name": "HLSA",
+  "description": "Events, sponsors, referral partners and the newsletter for Healthcare Leaders of San Antonio.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F6F5F2",
+  "theme_color": "#1E3864",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
