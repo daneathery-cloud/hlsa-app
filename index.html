@@ -500,7 +500,7 @@
     return el.value;
   }
 
-  fetch('https://healthcareleaderssa.com/wp-json/wp/v2/posts?per_page=5&_fields=title,link,categories,_embedded&_embed=wp:term')
+  fetch('https://healthcareleaderssa.com/wp-json/wp/v2/posts?per_page=5&_embed=wp:term')
     .then(function (r) { return r.json(); })
     .then(function (data) {
       var posts = data.map(function (p) {
