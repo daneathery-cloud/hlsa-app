@@ -145,8 +145,25 @@
     background: #FFFFFF; border: 1.5px dashed #C7CAD1; border-radius: 14px; height: 64px;
     display: flex; align-items: center; justify-content: center; color: #B7BCC6; font-size: 12px; font-weight: 700;
   }
-  .tier-label { font-size: 13px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: #8A93A3; margin-bottom: 10px; }
-  .tier-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; }
+
+  .sponsor-card {
+    background: #FFFFFF; border: 1px solid #E9E7E1; border-radius: 14px; padding: 14px;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .sponsor-card .s-logo {
+    height: 40px; max-width: 160px; width: auto; object-fit: contain; align-self: flex-start;
+  }
+  .sponsor-card .s-name { font-size: 14px; font-weight: 700; color: #1C2230; }
+  .sponsor-card .s-blurb { font-size: 13px; line-height: 1.5; color: #525C6B; }
+  .sponsor-card .s-site {
+    display: flex; align-items: center; gap: 6px; margin-top: 2px; font-size: 12px; font-weight: 700;
+    color: #1E3864; text-decoration: none; width: fit-content;
+  }
+  .sponsor-note {
+    font-size: 13px; line-height: 1.5; color: #525C6B; background: #FFFFFF;
+    border: 1px solid #E9E7E1; border-radius: 14px; padding: 14px;
+  }
+  .sponsor-note a { color: #1E3864; font-weight: 600; }
 
   .community-row { flex-direction: row; align-items: center; gap: 10px; padding: 12px 14px; }
   .dot { width: 8px; height: 8px; border-radius: 50%; background: #CD2027; flex-shrink: 0; }
@@ -285,7 +302,7 @@
           <div class="row"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9FB1D6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg><span>Marriott San Antonio Airport</span></div>
         </div>
         <div class="hero-actions">
-          <a class="btn-primary" style="text-decoration:none; display:inline-flex; align-items:center;" href="https://healthcareleaderssa.com" target="_blank" rel="noopener">RSVP</a>
+          <a class="btn-primary" id="rsvpLink" style="text-decoration:none; display:inline-flex; align-items:center;" href="https://lp.constantcontactpages.com/sl/iYP2CGi" target="_blank" rel="noopener">RSVP</a>
           <button class="btn-ghost">Add to calendar</button>
         </div>
       </div>
@@ -312,20 +329,106 @@
         <div class="section-sub">The organizations that make HLSA possible</div>
       </div>
 
-      <div>
-        <div class="tier-label">Presenting Sponsor</div>
-        <div class="tier-grid"><div class="logo-box">LOGO</div><div class="logo-box">LOGO</div></div>
-      </div>
-      <div>
-        <div class="tier-label">Gold Sponsors</div>
-        <div class="tier-grid"><div class="logo-box">LOGO</div><div class="logo-box">LOGO</div></div>
-      </div>
-      <div>
-        <div class="tier-label">Silver Sponsors</div>
-        <div class="tier-grid"><div class="logo-box">LOGO</div><div class="logo-box">LOGO</div></div>
-      </div>
+      <div class="sponsor-note">Interested in becoming a sponsor? Contact <a href="mailto:david@hlsa-texas.com">david@hlsa-texas.com</a>.</div>
 
-      <div class="placeholder-box">Ready for your 2026 sponsor roster &mdash; drop in logos, tiers and links here.</div>
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <div class="sponsor-card">
+          <img class="s-logo" src="https://healthcareleaderssa.com/wp-content/uploads/2026/03/Reserve-District-Travel-Logo-1-03-300x300.jpg" alt="Reserve District Travel logo" loading="lazy">
+          <div class="s-name">Reserve District Travel</div>
+          <div class="s-blurb">Curates personalized domestic and international luxury travel experiences tailored to your lifestyle and taste.</div>
+          <a class="s-site" href="https://reservedistrict.travel/" target="_blank" rel="noopener"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1E3864" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3h7v7"/><path d="M10 14 21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg>reservedistrict.travel</a>
+        </div>
+        <div class="sponsor-card">
+          <img class="s-logo" src="https://healthcareleaderssa.com/wp-content/uploads/2025/05/mortgage_logo-268x300.jpg" alt="Lone Star National Bank logo" loading="lazy">
+          <div class="s-name">Lone Star National Bank</div>
+          <div class="s-blurb">A respected South Texas financial services leader with 36 locations, including five in San Antonio, focused on long-term financial growth and community investment.</div>
+          <a class="s-site" href="https://www.lonestarnationalbank.com/" target="_blank" rel="noopener"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1E3864" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3h7v7"/><path d="M10 14 21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg>lonestarnationalbank.com</a>
+        </div>
+        <div class="sponsor-card">
+          <img class="s-logo" src="https://healthcareleaderssa.com/wp-content/uploads/2023/09/Hancock_Whitney_logo.svg_.png" alt="Hancock Whitney Bank logo" loading="lazy">
+          <div class="s-name">Hancock Whitney Bank</div>
+          <div class="s-blurb">Comprehensive financial services including private wealth management, institutional asset management, and corporate advisory &mdash; rated among the strongest and safest U.S. financial institutions.</div>
+          <a class="s-site" href="https://www.hancockwhitney.com/" target="_blank" rel="noopener"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1E3864" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3h7v7"/><path d="M10 14 21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg>hancockwhitney.com</a>
+        </div>
+        <div class="sponsor-card">
+          <img class="s-logo" src="https://healthcareleaderssa.com/wp-content/uploads/2023/09/legacy-office-centers-building-exterior-1.jpg" alt="Legacy Office Centers" loading="lazy">
+          <div class="s-name">Legacy Office Centers</div>
+          <div class="s-blurb">Flexible, professional office space in San Antonio's Forum Building, with conference rooms, on-site caf&eacute;, 24/7 security, and travel and passport services.</div>
+          <a class="s-site" href="https://www.legacyofficecenters.com/" target="_blank" rel="noopener"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1E3864" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3h7v7"/><path d="M10 14 21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg>legacyofficecenters.com</a>
+        </div>
+        <div class="sponsor-card">
+          <img class="s-logo" src="https://healthcareleaderssa.com/wp-content/uploads/2023/04/Tim-Allums_Texas-Realtor.jpg" alt="Tim Allums Realtor logo" loading="lazy">
+          <div class="s-name">Tim Allums, Realtor</div>
+          <div class="s-blurb">Broker Associate with Keller Williams Realty handling residential and commercial properties, with deep community involvement in the San Antonio market.</div>
+          <a class="s-site" href="https://www.linkedin.com/in/timallumsrealtor/" target="_blank" rel="noopener"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1E3864" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3h7v7"/><path d="M10 14 21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg>LinkedIn profile</a>
+        </div>
+        <div class="sponsor-card">
+          <img class="s-logo" src="https://healthcareleaderssa.com/wp-content/uploads/2022/06/Vested-Logo-with-website-and-phone-number.png" alt="Vested Business Brokers logo" loading="lazy">
+          <div class="s-name">Vested Business Brokers</div>
+          <div class="s-blurb">Connects buyers and sellers through one of the nation's largest business-for-sale databases &mdash; 350,000+ registered buyers and 3,600+ businesses for sale.</div>
+          <a class="s-site" href="https://www.vestedbb.com/texas-business-broker-gary+meyn-profile-id29258/" target="_blank" rel="noopener"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1E3864" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3h7v7"/><path d="M10 14 21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg>vestedbb.com</a>
+        </div>
+        <div class="sponsor-card">
+          <img class="s-logo" src="https://healthcareleaderssa.com/wp-content/uploads/2022/02/BCMS-Logo-Standard.png" alt="Bexar County Medical Society logo" loading="lazy">
+          <div class="s-name">Bexar County Medical Society</div>
+          <div class="s-blurb">Founded in 1853, the oldest county medical society in Texas, representing physicians across Bexar County and seven surrounding counties.</div>
+          <a class="s-site" href="https://bcms.org/" target="_blank" rel="noopener"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1E3864" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3h7v7"/><path d="M10 14 21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg>bcms.org</a>
+        </div>
+        <div class="sponsor-card">
+          <img class="s-logo" src="https://healthcareleaderssa.com/wp-content/uploads/2022/11/Jogan-Health-LargeFull-reg@4x-1024x137.png" alt="Jogan Health logo" loading="lazy">
+          <div class="s-name">Jogan Health</div>
+          <div class="s-blurb">Nationwide healthcare staffing and emergency response &mdash; surge staffing, locum tenens, telemedicine, and public health support.</div>
+          <a class="s-site" href="https://www.joganhealth.com/" target="_blank" rel="noopener"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1E3864" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3h7v7"/><path d="M10 14 21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg>joganhealth.com</a>
+        </div>
+        <div class="sponsor-card">
+          <img class="s-logo" src="https://healthcareleaderssa.com/wp-content/uploads/2022/10/LASO-Health-logo-300x150.png" alt="LASO Health logo" loading="lazy">
+          <div class="s-name">LASO Health</div>
+          <div class="s-blurb">Physician-built platform connecting patients and providers directly, offering urgent, primary, and behavioral telehealth nationwide.</div>
+          <a class="s-site" href="https://lasohealth.com/" target="_blank" rel="noopener"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1E3864" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3h7v7"/><path d="M10 14 21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg>lasohealth.com</a>
+        </div>
+        <div class="sponsor-card">
+          <img class="s-logo" src="https://healthcareleaderssa.com/wp-content/uploads/2023/01/meadowlawnlogo.png" alt="Meadowlawn logo" loading="lazy">
+          <div class="s-name">Meadowlawn</div>
+          <div class="s-blurb">Licensed funeral home, crematory, and perpetual care cemetery on a 94-acre southeast San Antonio property, including services at Fort Sam Houston National Cemetery.</div>
+          <a class="s-site" href="https://meadowlawn.net/" target="_blank" rel="noopener"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1E3864" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3h7v7"/><path d="M10 14 21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg>meadowlawn.net</a>
+        </div>
+        <div class="sponsor-card">
+          <img class="s-logo" src="https://healthcareleaderssa.com/wp-content/uploads/2020/03/Air-Med_aGMR-solution_logo-01-300x129.png" alt="AirMed International logo" loading="lazy">
+          <div class="s-name">AirMed International</div>
+          <div class="s-blurb">Global leader in air medical transport, providing bedside-to-bedside care with a dedicated, fully customized medical aircraft fleet.</div>
+          <a class="s-site" href="https://airmed.com/" target="_blank" rel="noopener"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1E3864" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3h7v7"/><path d="M10 14 21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg>airmed.com</a>
+        </div>
+        <div class="sponsor-card">
+          <img class="s-logo" src="https://healthcareleaderssa.com/wp-content/uploads/2020/03/Wolf-Leadership-Logo-300x94.png" alt="Wolf Leadership Development logo" loading="lazy">
+          <div class="s-name">Wolf Leadership Development</div>
+          <div class="s-blurb">Strengthens organizational leadership capacity through customized training and coaching, with experience across Fortune 500 companies.</div>
+          <a class="s-site" href="https://www.wolfleadership.com/" target="_blank" rel="noopener"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1E3864" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3h7v7"/><path d="M10 14 21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg>wolfleadership.com</a>
+        </div>
+        <div class="sponsor-card">
+          <img class="s-logo" src="https://healthcareleaderssa.com/wp-content/uploads/2020/03/South-Texas-Spinal-Hospital-Logo-1.png" alt="South Texas Spine & Surgical Hospital logo" loading="lazy">
+          <div class="s-name">South Texas Spine &amp; Surgical Hospital</div>
+          <div class="s-blurb">30-bed acute care facility with a 24/7 Emergency Department, CMS-licensed and Joint Commission accredited, specializing in spine and surgical care.</div>
+          <a class="s-site" href="https://southtexassurgical.com/" target="_blank" rel="noopener"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1E3864" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3h7v7"/><path d="M10 14 21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg>southtexassurgical.com</a>
+        </div>
+        <div class="sponsor-card">
+          <img class="s-logo" src="https://healthcareleaderssa.com/wp-content/uploads/2020/03/Redsquared_Logo_Horizontal_OnWhite_RGB-300x101.jpg" alt="RedSquared Consulting logo" loading="lazy">
+          <div class="s-name">RedSquared Consulting</div>
+          <div class="s-blurb">Helps organizations grow through customer understanding, empathy-driven strategy, and women-led business transformation.</div>
+          <a class="s-site" href="https://www.linkedin.com/company/redsquared-consulting/about/" target="_blank" rel="noopener"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1E3864" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3h7v7"/><path d="M10 14 21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg>LinkedIn page</a>
+        </div>
+        <div class="sponsor-card">
+          <img class="s-logo" src="https://healthcareleaderssa.com/wp-content/uploads/2020/03/Concordis-logo.png" alt="Concordis Practice Management logo" loading="lazy">
+          <div class="s-name">Concordis Practice Management</div>
+          <div class="s-blurb">Comprehensive medical practice management services helping practices of all sizes operate efficiently and navigate industry challenges.</div>
+          <a class="s-site" href="https://www.linkedin.com/company/concordis-practice-management-llc/" target="_blank" rel="noopener"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1E3864" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3h7v7"/><path d="M10 14 21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg>LinkedIn page</a>
+        </div>
+        <div class="sponsor-card">
+          <img class="s-logo" src="https://healthcareleaderssa.com/wp-content/uploads/2020/03/BDO-Logo_cleaned.png" alt="BDO Alliance USA logo" loading="lazy">
+          <div class="s-name">BDO Alliance USA</div>
+          <div class="s-blurb">One of the nation's largest associations of accounting and professional service firms, with 800+ independent Alliance firm locations.</div>
+          <a class="s-site" href="https://alliance.bdo.com/" target="_blank" rel="noopener"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1E3864" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3h7v7"/><path d="M10 14 21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg>alliance.bdo.com</a>
+        </div>
+      </div>
     </div>
 
     <!-- PARTNERS -->
@@ -524,6 +627,25 @@
       renderPosts('newsPostList', fallback);
       renderPosts('homePostList', fallback.slice(0, 2));
     });
+
+  // --- Auto-updating RSVP link ---
+  // The mixer registration link is a Constant Contact landing page that changes every
+  // month. Rather than hardcoding it, this reads the current "register here" link
+  // straight off the live HLSA homepage (WordPress page id 2) each time the app opens,
+  // so the button always points to the current month's page. Falls back to the
+  // hardcoded href already on the link (last known good URL) if this fails.
+  fetch('https://healthcareleaderssa.com/wp-json/wp/v2/pages/2?_fields=content')
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      var doc = new DOMParser().parseFromString(data.content.rendered, 'text/html');
+      var match = Array.from(doc.querySelectorAll('a')).find(function (a) {
+        return a.href.indexOf('constantcontactpages') !== -1 && /regist/i.test(a.textContent);
+      });
+      if (match) {
+        document.getElementById('rsvpLink').href = match.href;
+      }
+    })
+    .catch(function () {});
 
   // --- Offline banner ---
   function updateOnlineStatus() {

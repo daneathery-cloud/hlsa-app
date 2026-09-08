@@ -1,4 +1,4 @@
-const CACHE = "hlsa-app-v2";
+const CACHE = "hlsa-app-v3";
 const APP_SHELL = [
   "./",
   "./index.html",
