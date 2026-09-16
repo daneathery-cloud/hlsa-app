@@ -1,4 +1,4 @@
-const CACHE = "hlsa-app-v6";
+const CACHE = "hlsa-app-v7";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -39,8 +39,12 @@ self.addEventListener("fetch", (event) => {
     // Network-first: always try to get the latest index.html/manifest when online, so
     // an update you push is visible the very next time the app opens. Cache is only
     // used as an offline fallback.
+    // IMPORTANT: { cache: "no-store" } bypasses the BROWSER's own HTTP cache, not just
+    // this service worker's cache. GitHub Pages serves this file with a 10-minute
+    // Cache-Control, so without this flag "network-first" could still be quietly
+    // satisfied from the browser's disk cache instead of a real network request.
     event.respondWith(
-      fetch(req)
+      fetch(req, { cache: "no-store" })
         .then((response) => {
           if (response.ok) {
             const copy = response.clone();

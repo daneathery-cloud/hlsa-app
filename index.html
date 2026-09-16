@@ -676,7 +676,7 @@
     return el.value;
   }
 
-  fetch('https://healthcareleaderssa.com/wp-json/wp/v2/posts?per_page=5&_embed=wp:term')
+  fetch('https://healthcareleaderssa.com/wp-json/wp/v2/posts?per_page=5&_embed=wp:term', { cache: 'no-store' })
     .then(function (r) { return r.json(); })
     .then(function (data) {
       var posts = data.map(function (p) {
@@ -707,7 +707,7 @@
   // straight off the live HLSA homepage (WordPress page id 2) each time the app opens,
   // so the button always points to the current month's page. Falls back to the
   // hardcoded href already on the link (last known good URL) if this fails.
-  fetch('https://healthcareleaderssa.com/wp-json/wp/v2/pages/2?_fields=content')
+  fetch('https://healthcareleaderssa.com/wp-json/wp/v2/pages/2?_fields=content', { cache: 'no-store' })
     .then(function (r) { return r.json(); })
     .then(function (data) {
       var doc = new DOMParser().parseFromString(data.content.rendered, 'text/html');
@@ -729,9 +729,44 @@
   updateOnlineStatus();
 
   // --- Service worker ---
+  // updateViaCache: 'none' stops the browser from serving a cached copy of sw.js itself
+  // when checking for updates (GitHub Pages sets a 10-minute Cache-Control on it).
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', function () {
-      navigator.serviceWorker.register('sw.js').catch(function () {});
+      navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' })
+        .then(function (registration) {
+          // Browsers (especially iOS, for a home-screen-installed app) can go a long
+          // time without checking for a new service worker on their own — an app that's
+          // resumed from the background rather than freshly launched may sit on a stale
+          // version indefinitely otherwise. So actively ask for a check every time the
+          // app becomes visible again, not just passively wait for the browser.
+          var checkForUpdate = function () { registration.update().catch(function () {}); };
+          checkForUpdate();
+          document.addEventListener('visibilitychange', function () {
+            if (document.visibilityState === 'visible') checkForUpdate();
+          });
+          window.addEventListener('pageshow', function (event) {
+            // event.persisted = true means the page was restored from the back/forward
+            // cache (iOS often resumes a suspended app this way) rather than freshly
+            // loaded — exactly the case that used to require a reboot to pick up an update.
+            if (event.persisted) checkForUpdate();
+          });
+        })
+        .catch(function () {});
+
+      // Once a new service worker actually takes over, reload once so this page
+      // reflects the update immediately instead of showing it only on the next visit.
+      // controllerchange also fires on a brand-new visitor's very first install (this
+      // worker's clients.claim() immediately takes control of the page that's still
+      // loading) — that's not an "update," so only reload for a SECOND+ controller change.
+      var hadController = !!navigator.serviceWorker.controller;
+      var refreshed = false;
+      navigator.serviceWorker.addEventListener('controllerchange', function () {
+        if (!hadController) { hadController = true; return; }
+        if (refreshed) return;
+        refreshed = true;
+        window.location.reload();
+      });
     });
   }
 
