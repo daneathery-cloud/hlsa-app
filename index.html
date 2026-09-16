@@ -555,7 +555,7 @@
         <p>Monthly updates on events, member spotlights and industry insight &mdash; straight to your inbox.</p>
         <input type="email" placeholder="you@company.com" id="newsletterEmail" />
         <div class="hero-actions">
-          <button class="btn-primary" style="flex:1;" onclick="subscribeNewsletter()">Subscribe</button>
+          <a class="btn-primary" style="flex:1; text-decoration:none; display:inline-flex; align-items:center; justify-content:center;" href="https://lp.constantcontactpages.com/sl/BvzH1vD" target="_blank" rel="noopener">Subscribe</a>
           <a class="btn-ghost" style="text-decoration:none; display:inline-flex; align-items:center;" href="https://healthcareleaderssa.com/newsletter/" target="_blank" rel="noopener">Back issues</a>
         </div>
       </div>
@@ -635,15 +635,6 @@
     document.querySelectorAll('#partner-list .partner-card').forEach(function (card) {
       card.style.display = (cat === 'all' || card.dataset.category === cat) ? 'flex' : 'none';
     });
-  }
-
-  function subscribeNewsletter() {
-    var input = document.getElementById('newsletterEmail');
-    if (input.value) {
-      window.open('https://healthcareleaderssa.com', '_blank', 'noopener');
-    } else {
-      input.focus();
-    }
   }
 
   // --- Live posts from the HLSA WordPress site ---
