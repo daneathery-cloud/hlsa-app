@@ -1,9 +1,10 @@
-const CACHE = "hlsa-app-v5";
+const CACHE = "hlsa-app-v6";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./manifest.webmanifest",
   "./assets/logo.png",
+  "./assets/qrcode.min.js",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
 ];

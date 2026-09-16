@@ -54,11 +54,17 @@
     flex-shrink: 0;
     display: flex;
     align-items: center;
-    padding: calc(env(safe-area-inset-top, 0px) + 16px) 20px 16px;
+    justify-content: space-between;
+    padding: calc(env(safe-area-inset-top, 0px) + 16px) 16px 16px 20px;
     background: #FFFFFF;
     border-bottom: 1px solid #E9E7E1;
   }
   .screen-header img { height: 42px; width: auto; }
+  .share-btn {
+    background: #F6F5F2; border: 1px solid #E9E7E1; border-radius: 100px;
+    width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; color: #1E3864; font-family: inherit; cursor: pointer;
+  }
 
   .screen-body {
     flex: 1 1 auto;
@@ -219,6 +225,41 @@
     padding: 6px 12px;
   }
   .offline-banner.show { display: block; }
+
+  /* Share modal */
+  .share-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(20, 24, 34, 0.55);
+    z-index: 50; align-items: flex-end; justify-content: center;
+  }
+  .share-overlay.show { display: flex; }
+  .share-sheet {
+    background: #FFFFFF; width: 100%; max-width: 560px; border-radius: 22px 22px 0 0;
+    padding: 20px 20px calc(env(safe-area-inset-bottom, 0px) + 22px);
+    display: flex; flex-direction: column; align-items: center; gap: 16px;
+    animation: sheet-up 0.2s ease-out;
+  }
+  @keyframes sheet-up { from { transform: translateY(24px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  .share-sheet-head {
+    width: 100%; display: flex; align-items: center; justify-content: space-between;
+  }
+  .share-sheet-head .h { font-family: 'Sora', sans-serif; font-size: 17px; font-weight: 700; color: #1E3864; }
+  .share-close {
+    background: #F6F5F2; border: none; border-radius: 100px; width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center; color: #5B6472; cursor: pointer;
+  }
+  .qr-wrap {
+    background: #FFFFFF; border: 1px solid #E9E7E1; border-radius: 16px; padding: 16px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .qr-wrap svg { display: block; width: 200px; height: 200px; }
+  .share-sub { font-size: 13px; color: #6B7280; text-align: center; line-height: 1.5; margin: 0; }
+  .share-sheet-actions { width: 100%; display: flex; flex-direction: column; gap: 10px; }
+  .share-sheet-actions button {
+    width: 100%; min-height: 48px; border-radius: 100px; font-size: 14px; font-weight: 700;
+    font-family: inherit; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .share-primary { background: #CD2027; color: #FFFFFF; border: none; }
+  .share-secondary { background: #F6F5F2; color: #1E3864; border: 1px solid #E9E7E1; }
 </style>
 </head>
 <body>
@@ -228,6 +269,9 @@
 
   <div class="screen-header">
     <img src="assets/logo.png" alt="Healthcare Leaders of San Antonio" />
+    <button class="share-btn" onclick="openShareSheet()" aria-label="Share the app">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 10.5 6.8-3.9M8.6 13.5l6.8 3.9"/></svg>
+    </button>
   </div>
 
   <div class="screen-body">
@@ -552,6 +596,30 @@
   </div>
 </div>
 
+<div class="share-overlay" id="shareOverlay" onclick="if(event.target===this) closeShareSheet()">
+  <div class="share-sheet">
+    <div class="share-sheet-head">
+      <span class="h">Share the App</span>
+      <button class="share-close" onclick="closeShareSheet()" aria-label="Close">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="qr-wrap" id="qrWrap"></div>
+    <p class="share-sub">Have someone scan this with their phone's camera, or send them the link directly.</p>
+    <div class="share-sheet-actions">
+      <button class="share-primary" id="shareSystemBtn" onclick="shareViaSystem()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M5 14v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5"/></svg>
+        Share via&hellip;
+      </button>
+      <button class="share-secondary" id="copyLinkBtn" onclick="copyShareLink()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        Copy Link
+      </button>
+    </div>
+  </div>
+</div>
+
+<script src="assets/qrcode.min.js"></script>
 <script>
   function showTab(id) {
     document.querySelectorAll('.panel').forEach(function (p) { p.classList.remove('active'); });
@@ -665,6 +733,70 @@
     window.addEventListener('load', function () {
       navigator.serviceWorker.register('sw.js').catch(function () {});
     });
+  }
+
+  // --- Share the App ---
+  var SHARE_URL = 'https://daneathery-cloud.github.io/hlsa-app/';
+  var qrDrawn = false;
+
+  function drawQrCode() {
+    if (qrDrawn) return;
+    var qr = qrcode(0, 'M');
+    qr.addData(SHARE_URL);
+    qr.make();
+    var count = qr.getModuleCount();
+    var size = 200;
+    var cell = size / count;
+    var svg = '<svg viewBox="0 0 ' + size + ' ' + size + '" width="' + size + '" height="' + size + '" xmlns="http://www.w3.org/2000/svg">' +
+      '<rect width="' + size + '" height="' + size + '" fill="#FFFFFF"/>';
+    for (var r = 0; r < count; r++) {
+      for (var c = 0; c < count; c++) {
+        if (qr.isDark(r, c)) {
+          svg += '<rect x="' + (c * cell).toFixed(2) + '" y="' + (r * cell).toFixed(2) + '" width="' + cell.toFixed(2) + '" height="' + cell.toFixed(2) + '" fill="#1E3864"/>';
+        }
+      }
+    }
+    svg += '</svg>';
+    document.getElementById('qrWrap').innerHTML = svg;
+    qrDrawn = true;
+  }
+
+  function openShareSheet() {
+    drawQrCode();
+    if (!navigator.share) {
+      document.getElementById('shareSystemBtn').style.display = 'none';
+    }
+    document.getElementById('shareOverlay').classList.add('show');
+  }
+
+  function closeShareSheet() {
+    document.getElementById('shareOverlay').classList.remove('show');
+  }
+
+  function shareViaSystem() {
+    if (navigator.share) {
+      navigator.share({
+        title: 'Healthcare Leaders of San Antonio',
+        text: 'Check out the HLSA app for events, sponsors, and referral partners:',
+        url: SHARE_URL
+      }).catch(function () {});
+    }
+  }
+
+  function copyShareLink() {
+    var btn = document.getElementById('copyLinkBtn');
+    var reset = function () { btn.lastChild.textContent = ' Copy Link'; };
+    var done = function () {
+      btn.lastChild.textContent = ' Copied!';
+      setTimeout(reset, 1800);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(SHARE_URL).then(done).catch(function () {
+        window.prompt('Copy this link:', SHARE_URL);
+      });
+    } else {
+      window.prompt('Copy this link:', SHARE_URL);
+    }
   }
 </script>
 </body>
