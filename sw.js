@@ -1,4 +1,15 @@
-const CACHE = "hlsa-app-v10";
+const CACHE = "hlsa-app-v11";
+
+// Appends a throwaway query param so the OUTGOING network request has a URL GitHub
+// Pages' CDN has never seen before, guaranteeing a true cache miss there. This is the
+// piece that was still missing: { cache: "no-store" } on a fetch() only defeats the
+// BROWSER's own HTTP cache — GitHub Pages' CDN (Fastly) sits in front of that and does
+// NOT honor client cache-bypass request headers at all (confirmed directly: an
+// explicit Cache-Control: no-cache request still came back X-Cache: HIT, Age: 111). A
+// unique URL is the only thing that reliably defeats an edge cache like that.
+function bust(url) {
+  return url + (url.indexOf("?") === -1 ? "?" : "&") + "_sw=" + Date.now();
+}
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -38,7 +49,7 @@ self.addEventListener("fetch", (event) => {
   // the thing it's supposed to detect. Network-only, no fallback: if it fails, the page
   // just skips that particular check, which is fine.
   if (req.url.endsWith("version.json")) {
-    event.respondWith(fetch(req, { cache: "no-store" }));
+    event.respondWith(fetch(bust(req.url), { cache: "no-store" }));
     return;
   }
 
@@ -47,13 +58,13 @@ self.addEventListener("fetch", (event) => {
   if (isAppShellDoc) {
     // Network-first: always try to get the latest index.html/manifest when online, so
     // an update you push is visible the very next time the app opens. Cache is only
-    // used as an offline fallback.
-    // IMPORTANT: { cache: "no-store" } bypasses the BROWSER's own HTTP cache, not just
-    // this service worker's cache. GitHub Pages serves this file with a 10-minute
-    // Cache-Control, so without this flag "network-first" could still be quietly
-    // satisfied from the browser's disk cache instead of a real network request.
+    // used as an offline fallback. The actual network fetch goes to a cache-busted URL
+    // (see bust() above) to get past GitHub Pages' CDN, not just the browser's own
+    // cache — { cache: "no-store" } alone only handles the latter. The response is
+    // still stored under the ORIGINAL clean URL (req), so the offline fallback and any
+    // other lookup of this page keep working against a stable key.
     event.respondWith(
-      fetch(req, { cache: "no-store" })
+      fetch(bust(req.url), { cache: "no-store" })
         .then((response) => {
           if (response.ok) {
             const copy = response.clone();

@@ -627,7 +627,7 @@
 <script src="assets/qrcode.min.js"></script>
 <script>
   // Bumped on every deploy, in lockstep with version.json and sw.js's CACHE name.
-  var APP_VERSION = 10;
+  var APP_VERSION = 11;
 
   function showTab(id) {
     document.querySelectorAll('.panel').forEach(function (p) { p.classList.remove('active'); });
@@ -727,11 +727,27 @@
   window.addEventListener('offline', updateOnlineStatus);
   updateOnlineStatus();
 
-  // --- Service worker (asset caching / offline only — NOT responsible for detecting
-  // updates; see the version check below for that) ---
+  // --- Service worker (asset caching / offline only — the version check below, not
+  // this, is what decides whether to reload). Still worth actively nudging it to check
+  // for its own updates on resume: if the SW itself is stuck on an old version, a
+  // reload triggered by the version check would be handled by that same old (possibly
+  // CDN-cache-vulnerable) fetch logic. updateViaCache: 'none' only defeats the
+  // browser's cache for that check, same CDN caveat as everything else applies, but an
+  // active nudge is still strictly better than passively waiting on the browser. ---
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', function () {
-      navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).catch(function () {});
+      navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' })
+        .then(function (registration) {
+          var nudge = function () { registration.update().catch(function () {}); };
+          nudge();
+          document.addEventListener('visibilitychange', function () {
+            if (document.visibilityState === 'visible') nudge();
+          });
+          window.addEventListener('pageshow', function (event) {
+            if (event.persisted) nudge();
+          });
+        })
+        .catch(function () {});
     });
   }
 
