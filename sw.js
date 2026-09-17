@@ -1,4 +1,4 @@
-const CACHE = "hlsa-app-v9";
+const CACHE = "hlsa-app-v10";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -32,6 +32,15 @@ self.addEventListener("fetch", (event) => {
   // page's own fetch() calls already have their own fresh-data-with-fallback logic,
   // and caching them here would just serve stale sponsor/post/RSVP data on repeat opens.
   if (new URL(req.url).origin !== self.location.origin) return;
+
+  // version.json is the update-detection mechanism (see index.html) — it must NEVER be
+  // served from this (or any) cache, or the version check becomes exactly as stale as
+  // the thing it's supposed to detect. Network-only, no fallback: if it fails, the page
+  // just skips that particular check, which is fine.
+  if (req.url.endsWith("version.json")) {
+    event.respondWith(fetch(req, { cache: "no-store" }));
+    return;
+  }
 
   const isAppShellDoc = req.mode === "navigate" || req.url.endsWith("manifest.webmanifest");
 

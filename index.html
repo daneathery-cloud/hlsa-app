@@ -269,9 +269,14 @@
 
   <div class="screen-header">
     <img src="assets/logo.png" alt="Healthcare Leaders of San Antonio" />
-    <button class="share-btn" onclick="openShareSheet()" aria-label="Share the app">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 10.5 6.8-3.9M8.6 13.5l6.8 3.9"/></svg>
-    </button>
+    <div style="display:flex; gap:8px;">
+      <button class="share-btn" onclick="refreshApp()" aria-label="Refresh for the latest content">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.6-6.4"/><path d="M21 4v5h-5"/></svg>
+      </button>
+      <button class="share-btn" onclick="openShareSheet()" aria-label="Share the app">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 10.5 6.8-3.9M8.6 13.5l6.8 3.9"/></svg>
+      </button>
+    </div>
   </div>
 
   <div class="screen-body">
@@ -621,6 +626,9 @@
 
 <script src="assets/qrcode.min.js"></script>
 <script>
+  // Bumped on every deploy, in lockstep with version.json and sw.js's CACHE name.
+  var APP_VERSION = 10;
+
   function showTab(id) {
     document.querySelectorAll('.panel').forEach(function (p) { p.classList.remove('active'); });
     document.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.remove('active'); });
@@ -719,46 +727,54 @@
   window.addEventListener('offline', updateOnlineStatus);
   updateOnlineStatus();
 
-  // --- Service worker ---
-  // updateViaCache: 'none' stops the browser from serving a cached copy of sw.js itself
-  // when checking for updates (GitHub Pages sets a 10-minute Cache-Control on it).
+  // --- Service worker (asset caching / offline only — NOT responsible for detecting
+  // updates; see the version check below for that) ---
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', function () {
-      navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' })
-        .then(function (registration) {
-          // Browsers (especially iOS, for a home-screen-installed app) can go a long
-          // time without checking for a new service worker on their own — an app that's
-          // resumed from the background rather than freshly launched may sit on a stale
-          // version indefinitely otherwise. So actively ask for a check every time the
-          // app becomes visible again, not just passively wait for the browser.
-          var checkForUpdate = function () { registration.update().catch(function () {}); };
-          checkForUpdate();
-          document.addEventListener('visibilitychange', function () {
-            if (document.visibilityState === 'visible') checkForUpdate();
-          });
-          window.addEventListener('pageshow', function (event) {
-            // event.persisted = true means the page was restored from the back/forward
-            // cache (iOS often resumes a suspended app this way) rather than freshly
-            // loaded — exactly the case that used to require a reboot to pick up an update.
-            if (event.persisted) checkForUpdate();
-          });
-        })
-        .catch(function () {});
-
-      // Once a new service worker actually takes over, reload once so this page
-      // reflects the update immediately instead of showing it only on the next visit.
-      // controllerchange also fires on a brand-new visitor's very first install (this
-      // worker's clients.claim() immediately takes control of the page that's still
-      // loading) — that's not an "update," so only reload for a SECOND+ controller change.
-      var hadController = !!navigator.serviceWorker.controller;
-      var refreshed = false;
-      navigator.serviceWorker.addEventListener('controllerchange', function () {
-        if (!hadController) { hadController = true; return; }
-        if (refreshed) return;
-        refreshed = true;
-        window.location.reload();
-      });
+      navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).catch(function () {});
     });
+  }
+
+  // --- Version check: the actual update-detection mechanism ---
+  // Deliberately independent of the service worker's own update lifecycle (SW
+  // "controllerchange"/"updatefound" events, skipWaiting, clients.claim) — that
+  // machinery has repeatedly proven unreliable in practice for this app, especially on
+  // an installed/home-screen iPhone app that gets *resumed* rather than freshly
+  // relaunched. Instead this is the simplest possible mechanism: on load and every time
+  // the app becomes visible again, fetch a tiny version.json (explicitly bypassing ALL
+  // caching — see sw.js, which passes version.json straight to the network and never
+  // caches it) and compare it to the version baked into THIS already-loaded page. A
+  // mismatch means a newer version has been deployed, so reload to pick it up.
+  // NOTE: this code can only run once a page has actually loaded it — a phone stuck on
+  // a much older copy of index.html (from before this existed) won't self-heal until it
+  // gets one genuine fresh load some other way (reboot, or the manual Refresh button).
+  var reloadTriggered = false;
+  function checkAppVersion() {
+    if (reloadTriggered) return;
+    fetch('version.json', { cache: 'no-store' })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (!reloadTriggered && data.version && data.version !== APP_VERSION) {
+          reloadTriggered = true;
+          window.location.reload();
+        }
+      })
+      .catch(function () {});
+  }
+  checkAppVersion();
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'visible') checkAppVersion();
+  });
+  window.addEventListener('pageshow', function (event) {
+    // event.persisted = true: page was restored from the back/forward cache rather
+    // than freshly loaded — the "resumed, not relaunched" case seen on iPhone.
+    if (event.persisted) checkAppVersion();
+  });
+
+  // Manual fallback — guaranteed to work regardless of any automatic detection, since
+  // it's a direct user-triggered reload rather than something waiting to be noticed.
+  function refreshApp() {
+    window.location.reload();
   }
 
   // --- Share the App ---
