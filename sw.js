@@ -1,4 +1,4 @@
-const CACHE = "hlsa-app-v11";
+const CACHE = "hlsa-app-v12";
 
 // Appends a throwaway query param so the OUTGOING network request has a URL GitHub
 // Pages' CDN has never seen before, guaranteeing a true cache miss there. This is the

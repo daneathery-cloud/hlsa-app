@@ -197,9 +197,6 @@
   }
   .newsletter-card .h { font-family: 'Sora', sans-serif; font-size: 18px; font-weight: 700; }
   .newsletter-card p { margin: 0; font-size: 13px; color: #D7DEEA; line-height: 1.5; }
-  .newsletter-card input {
-    background: #FFFFFF; border: none; border-radius: 10px; padding: 12px 14px; font-size: 14px; color: #1C2230; font-family: inherit;
-  }
 
   /* Tab bar */
   .tab-bar {
@@ -558,7 +555,6 @@
       <div class="newsletter-card">
         <div class="h">HLSA Newsletter</div>
         <p>Monthly updates on events, member spotlights and industry insight &mdash; straight to your inbox.</p>
-        <input type="email" placeholder="you@company.com" id="newsletterEmail" />
         <div class="hero-actions">
           <a class="btn-primary" style="flex:1; text-decoration:none; display:inline-flex; align-items:center; justify-content:center;" href="https://lp.constantcontactpages.com/sl/BvzH1vD" target="_blank" rel="noopener">Subscribe</a>
           <a class="btn-ghost" style="text-decoration:none; display:inline-flex; align-items:center;" href="https://healthcareleaderssa.com/newsletter/" target="_blank" rel="noopener">Back issues</a>
@@ -627,7 +623,7 @@
 <script src="assets/qrcode.min.js"></script>
 <script>
   // Bumped on every deploy, in lockstep with version.json and sw.js's CACHE name.
-  var APP_VERSION = 11;
+  var APP_VERSION = 12;
 
   function showTab(id) {
     document.querySelectorAll('.panel').forEach(function (p) { p.classList.remove('active'); });
