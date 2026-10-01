@@ -489,7 +489,7 @@
         <div class="section-sub">Trusted businesses in the HLSA network</div>
       </div>
 
-      <button class="btn-primary" id="sharePartnersBtn" style="align-self:flex-start; width:fit-content;" onclick="sharePartnersFlyer()">
+      <button class="btn-primary" id="sharePartnersBtn" style="align-self:flex-start; width:fit-content;" onclick="openPartnersShareSheet()">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px; vertical-align:-3px;"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M5 14v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5"/></svg>Share this page
       </button>
 
@@ -634,10 +634,32 @@
   </div>
 </div>
 
+<div class="share-overlay" id="partnersShareOverlay" onclick="if(event.target===this) closePartnersShareSheet()">
+  <div class="share-sheet">
+    <div class="share-sheet-head">
+      <span class="h">Share Referral Partners</span>
+      <button class="share-close" onclick="closePartnersShareSheet()" aria-label="Close">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <p class="share-sub">A link keeps every partner's website tappable for whoever you send it to. The image is a quick visual, good for a glance or a post, but its links aren't clickable.</p>
+    <div class="share-sheet-actions">
+      <button class="share-primary" id="partnersShareLinkBtn" onclick="sharePartnersLink()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.07 0l2.5-2.5a5 5 0 0 0-7.07-7.07L11 5"/><path d="M14 11a5 5 0 0 0-7.07 0l-2.5 2.5a5 5 0 0 0 7.07 7.07L13 19"/></svg>
+        Share Link (links stay clickable)
+      </button>
+      <button class="share-secondary" id="partnersShareImageBtn" onclick="sharePartnersFlyer()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+        Share as Flyer Image
+      </button>
+    </div>
+  </div>
+</div>
+
 <script src="assets/qrcode.min.js"></script>
 <script>
   // Bumped on every deploy, in lockstep with version.json and sw.js's CACHE name.
-  var APP_VERSION = 14;
+  var APP_VERSION = 15;
 
   function showTab(id) {
     document.querySelectorAll('.panel').forEach(function (p) { p.classList.remove('active'); });
@@ -645,6 +667,13 @@
     document.getElementById('panel-' + id).classList.add('active');
     document.getElementById('tabbtn-' + id).classList.add('active');
     document.querySelector('.screen-body').scrollTop = 0;
+  }
+
+  // Deep link: a URL ending in #partners (used by the Partners "Share link" option)
+  // opens straight to that tab instead of Home.
+  var DEEP_LINK_TABS = ['home', 'events', 'sponsors', 'partners', 'news'];
+  if (DEEP_LINK_TABS.indexOf(location.hash.slice(1)) !== -1) {
+    showTab(location.hash.slice(1));
   }
 
   function setPartnerFilter(cat, btn) {
@@ -980,15 +1009,45 @@
     });
   }
 
+  function openPartnersShareSheet() {
+    document.getElementById('partnersShareOverlay').classList.add('show');
+  }
+
+  function closePartnersShareSheet() {
+    document.getElementById('partnersShareOverlay').classList.remove('show');
+  }
+
+  // Shares a link straight to the Partners tab (#partners, see the deep-link handling
+  // near showTab) — whoever opens it gets the real app, with every partner's website
+  // still a live, tappable link. This is the option that actually answers "keep the
+  // links active," which a shared image fundamentally can't do.
+  function sharePartnersLink() {
+    closePartnersShareSheet();
+    var url = SHARE_URL + '#partners';
+    if (navigator.share) {
+      navigator.share({
+        title: 'HLSA Referral Partners',
+        text: 'Trusted referral partners from Healthcare Leaders of San Antonio — tap through for details and contact info:',
+        url: url
+      }).catch(function () {});
+    } else if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url).catch(function () {
+        window.prompt('Copy this link:', url);
+      });
+    } else {
+      window.prompt('Copy this link:', url);
+    }
+  }
+
   function sharePartnersFlyer() {
-    var btn = document.getElementById('sharePartnersBtn');
-    var original = btn.innerHTML;
+    var btn = document.getElementById('partnersShareImageBtn');
     btn.disabled = true;
     btn.style.opacity = '0.7';
 
     buildPartnersFlyerBlob().then(function (blob) {
       btn.disabled = false;
       btn.style.opacity = '';
+      closePartnersShareSheet();
       var file = new File([blob], 'hlsa-referral-partners.png', { type: 'image/png' });
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
         navigator.share({
@@ -1001,7 +1060,7 @@
         navigator.share({
           title: 'HLSA Referral Partners',
           text: 'Trusted referral partners from Healthcare Leaders of San Antonio:',
-          url: SHARE_URL
+          url: SHARE_URL + '#partners'
         }).catch(function () {});
       } else {
         // No share API at all — open the flyer image so it can be saved/shared manually.
