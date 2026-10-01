@@ -190,6 +190,11 @@
     display: flex; align-items: center; gap: 6px; margin-top: 2px; font-size: 12px; font-weight: 700;
     color: #1E3864; text-decoration: none; width: fit-content;
   }
+  .partner-card .p-contact {
+    display: flex; flex-direction: column; gap: 2px; margin-top: 2px; padding-top: 8px; border-top: 1px solid #F0EFEA;
+  }
+  .partner-card .p-contact-name { font-size: 12px; font-weight: 700; color: #1C2230; }
+  .partner-card .p-contact-link { font-size: 12px; font-weight: 600; color: #1E3864; text-decoration: none; width: fit-content; }
 
   .newsletter-card {
     background: #1E3864; border-radius: 18px; padding: 20px; color: #FFFFFF;
@@ -506,6 +511,11 @@
           <div class="p-name">Wave Online</div><div class="p-sub">Revenue Cycle Management</div>
           <div class="p-blurb">25 years optimizing medical coding, billing and HCC risk adjustment so healthcare organizations are reimbursed accurately and on time.</div>
           <a class="p-site" href="https://wavehca.com" target="_blank" rel="noopener"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1E3864" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3h7v7"/><path d="M10 14 21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg>wavehca.com</a>
+          <div class="p-contact">
+            <span class="p-contact-name">David Neathery &mdash; San Antonio / South Texas</span>
+            <a class="p-contact-link" href="mailto:dneathery@wavehca.com">dneathery@wavehca.com</a>
+            <a class="p-contact-link" href="tel:+12108027551">210-802-7551</a>
+          </div>
         </div>
         <div class="partner-card" data-category="finance">
           <div class="p-name">Gary Meyn &mdash; Vested Business Brokers</div><div class="p-sub">Business Broker</div>
@@ -623,7 +633,7 @@
 <script src="assets/qrcode.min.js"></script>
 <script>
   // Bumped on every deploy, in lockstep with version.json and sw.js's CACHE name.
-  var APP_VERSION = 12;
+  var APP_VERSION = 13;
 
   function showTab(id) {
     document.querySelectorAll('.panel').forEach(function (p) { p.classList.remove('active'); });
