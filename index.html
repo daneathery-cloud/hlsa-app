@@ -659,7 +659,7 @@
 <script src="assets/qrcode.min.js"></script>
 <script>
   // Bumped on every deploy, in lockstep with version.json and sw.js's CACHE name.
-  var APP_VERSION = 15;
+  var APP_VERSION = 16;
 
   function showTab(id) {
     document.querySelectorAll('.panel').forEach(function (p) { p.classList.remove('active'); });
@@ -834,6 +834,13 @@
 
   // --- Share the App ---
   var SHARE_URL = 'https://daneathery-cloud.github.io/hlsa-app/';
+
+  // window.prompt() is unavailable in a few embedded/kiosk-style contexts — this is the
+  // last link in the copy-link fallback chain, so if it fails too there's nothing left
+  // to fall back to; just fail quietly rather than throwing an unhandled error.
+  function safePrompt(message, value) {
+    try { window.prompt(message, value); } catch (e) {}
+  }
 
   // --- Share Partners page as a flyer image ---
   function wrapCanvasText(ctx, text, maxWidth) {
@@ -1032,10 +1039,10 @@
       }).catch(function () {});
     } else if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(url).catch(function () {
-        window.prompt('Copy this link:', url);
+        safePrompt('Copy this link:', url);
       });
     } else {
-      window.prompt('Copy this link:', url);
+      safePrompt('Copy this link:', url);
     }
   }
 
@@ -1127,10 +1134,10 @@
     };
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(SHARE_URL).then(done).catch(function () {
-        window.prompt('Copy this link:', SHARE_URL);
+        safePrompt('Copy this link:', SHARE_URL);
       });
     } else {
-      window.prompt('Copy this link:', SHARE_URL);
+      safePrompt('Copy this link:', SHARE_URL);
     }
   }
 </script>
