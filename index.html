@@ -489,6 +489,10 @@
         <div class="section-sub">Trusted businesses in the HLSA network</div>
       </div>
 
+      <button class="btn-primary" id="sharePartnersBtn" style="align-self:flex-start; width:fit-content;" onclick="sharePartnersFlyer()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px; vertical-align:-3px;"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M5 14v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5"/></svg>Share this page
+      </button>
+
       <div class="filter-row">
         <button class="filter-chip active" data-filter="all" onclick="setPartnerFilter('all', this)">All</button>
         <button class="filter-chip" data-filter="healthcare" onclick="setPartnerFilter('healthcare', this)">Healthcare Services</button>
@@ -633,7 +637,7 @@
 <script src="assets/qrcode.min.js"></script>
 <script>
   // Bumped on every deploy, in lockstep with version.json and sw.js's CACHE name.
-  var APP_VERSION = 13;
+  var APP_VERSION = 14;
 
   function showTab(id) {
     document.querySelectorAll('.panel').forEach(function (p) { p.classList.remove('active'); });
@@ -801,6 +805,214 @@
 
   // --- Share the App ---
   var SHARE_URL = 'https://daneathery-cloud.github.io/hlsa-app/';
+
+  // --- Share Partners page as a flyer image ---
+  function wrapCanvasText(ctx, text, maxWidth) {
+    var words = text.split(' ');
+    var lines = [];
+    var line = '';
+    for (var i = 0; i < words.length; i++) {
+      var test = line ? line + ' ' + words[i] : words[i];
+      if (ctx.measureText(test).width > maxWidth && line) {
+        lines.push(line);
+        line = words[i];
+      } else {
+        line = test;
+      }
+    }
+    if (line) lines.push(line);
+    return lines;
+  }
+
+  function buildPartnersFlyerBlob() {
+    return document.fonts.ready.then(function () {
+      var partners = Array.from(document.querySelectorAll('#partner-list .partner-card')).map(function (card) {
+        return {
+          name: card.querySelector('.p-name').textContent.trim(),
+          sub: card.querySelector('.p-sub').textContent.trim(),
+          site: (card.querySelector('.p-site').textContent || '').trim()
+        };
+      });
+
+      var W = 1080, M = 64, CW = W - M * 2;
+      var mctx = document.createElement('canvas').getContext('2d');
+      var sections = []; // { h, draw(ctx, y, logo) }
+      var noop = function () {};
+
+      sections.push({ h: 56, draw: noop }); // top padding
+      sections.push({
+        h: 90,
+        draw: function (ctx, y, logo) {
+          if (logo && logo.naturalWidth) {
+            var lh = 90, lw = logo.naturalWidth * (lh / logo.naturalHeight);
+            ctx.drawImage(logo, (W - lw) / 2, y, lw, lh);
+          }
+        }
+      });
+      sections.push({ h: 28, draw: noop });
+      sections.push({
+        h: 26,
+        draw: function (ctx, y) {
+          ctx.textAlign = 'center';
+          ctx.fillStyle = '#CD2027';
+          ctx.font = "700 24px 'Public Sans', sans-serif";
+          ctx.fillText('HEALTHCARE LEADERS OF SAN ANTONIO', W / 2, y + 20);
+        }
+      });
+      sections.push({ h: 14, draw: noop });
+      sections.push({
+        h: 52,
+        draw: function (ctx, y) {
+          ctx.textAlign = 'center';
+          ctx.fillStyle = '#1E3864';
+          ctx.font = "700 50px 'Sora', sans-serif";
+          ctx.fillText('Trusted Referral Partners', W / 2, y + 40);
+        }
+      });
+      sections.push({ h: 40, draw: noop });
+      sections.push({
+        h: 2,
+        draw: function (ctx, y) {
+          ctx.strokeStyle = '#E2DFD8'; ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.moveTo(M, y + 1); ctx.lineTo(W - M, y + 1); ctx.stroke();
+        }
+      });
+      sections.push({ h: 36, draw: noop });
+
+      partners.forEach(function (p, idx) {
+        mctx.font = "700 32px 'Sora', sans-serif";
+        var nameLines = wrapCanvasText(mctx, p.name, CW);
+        sections.push({
+          h: nameLines.length * 38,
+          draw: function (ctx, y) {
+            ctx.textAlign = 'left';
+            ctx.fillStyle = '#1C2230';
+            ctx.font = "700 32px 'Sora', sans-serif";
+            nameLines.forEach(function (line, i) { ctx.fillText(line, M, y + 28 + i * 38); });
+          }
+        });
+        sections.push({ h: 8, draw: noop });
+        sections.push({
+          h: 24,
+          draw: function (ctx, y) {
+            ctx.textAlign = 'left';
+            ctx.fillStyle = '#CD2027';
+            ctx.font = "700 22px 'Public Sans', sans-serif";
+            ctx.fillText(p.sub, M, y + 18);
+          }
+        });
+        sections.push({ h: 6, draw: noop });
+        sections.push({
+          h: 24,
+          draw: function (ctx, y) {
+            ctx.textAlign = 'left';
+            ctx.fillStyle = '#1E3864';
+            ctx.font = "600 22px 'Public Sans', sans-serif";
+            ctx.fillText(p.site, M, y + 18);
+          }
+        });
+
+        var isLast = idx === partners.length - 1;
+        sections.push({ h: isLast ? 36 : 28, draw: noop });
+        if (!isLast) {
+          sections.push({
+            h: 1,
+            draw: function (ctx, y) {
+              ctx.strokeStyle = '#EDEBE5'; ctx.lineWidth = 1;
+              ctx.beginPath(); ctx.moveTo(M, y); ctx.lineTo(W - M, y); ctx.stroke();
+            }
+          });
+          sections.push({ h: 28, draw: noop });
+        }
+      });
+
+      sections.push({
+        h: 2,
+        draw: function (ctx, y) {
+          ctx.strokeStyle = '#E2DFD8'; ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.moveTo(M, y + 1); ctx.lineTo(W - M, y + 1); ctx.stroke();
+        }
+      });
+      sections.push({ h: 32, draw: noop });
+      sections.push({
+        h: 26,
+        draw: function (ctx, y) {
+          ctx.textAlign = 'center';
+          ctx.fillStyle = '#1E3864';
+          ctx.font = "700 24px 'Sora', sans-serif";
+          ctx.fillText('Open the full app for details & more', W / 2, y + 20);
+        }
+      });
+      sections.push({ h: 10, draw: noop });
+      sections.push({
+        h: 26,
+        draw: function (ctx, y) {
+          ctx.textAlign = 'center';
+          ctx.fillStyle = '#CD2027';
+          ctx.font = "700 24px 'Public Sans', sans-serif";
+          ctx.fillText('daneathery-cloud.github.io/hlsa-app', W / 2, y + 20);
+        }
+      });
+      sections.push({ h: 56, draw: noop });
+
+      var H = sections.reduce(function (sum, s) { return sum + s.h; }, 0);
+
+      return new Promise(function (resolve) {
+        var logo = new Image();
+        function finish() {
+          var canvas = document.createElement('canvas');
+          canvas.width = W;
+          canvas.height = Math.ceil(H);
+          var ctx = canvas.getContext('2d');
+          ctx.fillStyle = '#F6F5F2';
+          ctx.fillRect(0, 0, W, canvas.height);
+          var cy = 0;
+          sections.forEach(function (s) {
+            s.draw(ctx, cy, logo);
+            cy += s.h;
+          });
+          canvas.toBlob(function (blob) { resolve(blob); }, 'image/png');
+        }
+        logo.onload = finish;
+        logo.onerror = finish;
+        logo.src = 'assets/logo.png';
+      });
+    });
+  }
+
+  function sharePartnersFlyer() {
+    var btn = document.getElementById('sharePartnersBtn');
+    var original = btn.innerHTML;
+    btn.disabled = true;
+    btn.style.opacity = '0.7';
+
+    buildPartnersFlyerBlob().then(function (blob) {
+      btn.disabled = false;
+      btn.style.opacity = '';
+      var file = new File([blob], 'hlsa-referral-partners.png', { type: 'image/png' });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        navigator.share({
+          files: [file],
+          title: 'HLSA Referral Partners',
+          text: 'Trusted referral partners from Healthcare Leaders of San Antonio.'
+        }).catch(function () {});
+      } else if (navigator.share) {
+        // Device can share but not files — fall back to sharing a link to this page.
+        navigator.share({
+          title: 'HLSA Referral Partners',
+          text: 'Trusted referral partners from Healthcare Leaders of San Antonio:',
+          url: SHARE_URL
+        }).catch(function () {});
+      } else {
+        // No share API at all — open the flyer image so it can be saved/shared manually.
+        window.open(URL.createObjectURL(blob), '_blank');
+      }
+    }).catch(function () {
+      btn.disabled = false;
+      btn.style.opacity = '';
+    });
+  }
+
   var qrDrawn = false;
 
   function drawQrCode() {
