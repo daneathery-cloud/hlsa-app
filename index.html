@@ -489,9 +489,13 @@
         <div class="section-sub">Trusted businesses in the HLSA network</div>
       </div>
 
-      <button class="btn-primary" id="sharePartnersBtn" style="align-self:flex-start; width:fit-content;" onclick="openPartnersShareSheet()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px; vertical-align:-3px;"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M5 14v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5"/></svg>Share this page
-      </button>
+      <!-- Points at the PDF flyer in the website's media library (links inside it are
+           clickable). The in-app flyer-image / share-link sheet (openPartnersShareSheet
+           and friends) is intentionally left in the code, just not wired to anything,
+           in case it's wanted again once the unlisted partners page exists. -->
+      <a class="btn-primary" id="sharePartnersBtn" style="align-self:flex-start; width:fit-content; text-decoration:none; display:inline-flex; align-items:center;" href="https://healthcareleaderssa.com/wp-content/uploads/2026/10/HLSA_Trusted_Referral_Partners-3.pdf" target="_blank" rel="noopener">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;"><path d="M12 4v12M7 11l5 5 5-5"/><path d="M5 20h14"/></svg>Download partner flyer (PDF)
+      </a>
 
       <div class="filter-row">
         <button class="filter-chip active" data-filter="all" onclick="setPartnerFilter('all', this)">All</button>
@@ -659,7 +663,7 @@
 <script src="assets/qrcode.min.js"></script>
 <script>
   // Bumped on every deploy, in lockstep with version.json and sw.js's CACHE name.
-  var APP_VERSION = 16;
+  var APP_VERSION = 17;
 
   function showTab(id) {
     document.querySelectorAll('.panel').forEach(function (p) { p.classList.remove('active'); });
