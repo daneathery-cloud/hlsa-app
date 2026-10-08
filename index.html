@@ -228,6 +228,61 @@
   }
   .offline-banner.show { display: block; }
 
+  /* ---- Contacts / business-card scanner ---- */
+  .scan-tile {
+    display: flex; align-items: center; gap: 14px; width: 100%; text-align: left;
+    background: #1E3864; color: #FFFFFF; border: none; border-radius: 16px; padding: 16px 18px;
+    min-height: 44px; cursor: pointer; font-family: inherit; margin-top: 10px;
+  }
+  .scan-tile .t { font-size: 15px; font-weight: 700; display: block; }
+  .scan-tile .s { font-size: 12.5px; color: #C9D3E6; display: block; margin-top: 2px; }
+  .ct-back { background: none; border: none; color: #1E3864; font-size: 13px; font-weight: 700; padding: 6px 0; width: fit-content; font-family: inherit; cursor: pointer; }
+  .ct-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+  .ct-actions .btn-primary, .ct-actions .btn-light {
+    display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 20px; border-radius: 100px;
+    font-size: 14px; font-weight: 700; font-family: inherit; cursor: pointer;
+  }
+  .btn-light { background: #FFFFFF; color: #1E3864; border: 1px solid #D9D6CC; }
+  .ct-status { font-size: 13px; color: #525C6B; min-height: 18px; }
+  .ct-status.busy { color: #1E3864; font-weight: 600; }
+  .ct-tip { font-size: 12.5px; line-height: 1.5; color: #525C6B; background: #FFFFFF; border: 1px solid #E9E7E1; border-radius: 12px; padding: 10px 12px; }
+  .ct-tools { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .ct-search { flex: 1 1 140px; min-width: 120px; min-height: 40px; border: 1px solid #D9D6CC; border-radius: 100px; padding: 0 14px; font-size: 14px; font-family: inherit; background: #FFFFFF; color: #1C2230; }
+  .ct-chip { min-height: 40px; padding: 0 14px; border-radius: 100px; border: 1px solid #D9D6CC; background: #FFFFFF; color: #525C6B; font-size: 12.5px; font-weight: 700; font-family: inherit; cursor: pointer; white-space: nowrap; }
+  .ct-chip.on { background: #CD2027; border-color: #CD2027; color: #FFFFFF; }
+  .ct-count { font-size: 12.5px; color: #6B7280; }
+  .ct-wrap { overflow: auto; border: 1px solid #E2DFD6; border-radius: 12px; background: #FFFFFF; max-height: 62vh; -webkit-overflow-scrolling: touch; }
+  table.ct { border-collapse: separate; border-spacing: 0; font-size: 13px; min-width: 100%; }
+  table.ct th { position: sticky; top: 0; z-index: 3; background: #F1EFE8; color: #3A4352; font-weight: 700; text-align: left; padding: 9px 10px; border-bottom: 1px solid #DAD6CA; white-space: nowrap; font-size: 12px; }
+  table.ct td { padding: 0; border-bottom: 1px solid #EEEBE3; border-right: 1px solid #F3F1EA; vertical-align: top; background: #FFFFFF; }
+  table.ct td .cell { padding: 10px; min-height: 40px; outline: none; word-break: break-word; line-height: 1.35; }
+  table.ct td .cell:focus { background: #EEF3FC; box-shadow: inset 0 0 0 2px #1E3864; }
+  table.ct td.unsure { background: #FFF1C9; }
+  table.ct td.unsure .cell:focus { background: #FFF1C9; }
+  table.ct .c-name { min-width: 170px; }
+  table.ct .c-title { min-width: 150px; }
+  table.ct .c-company { min-width: 170px; }
+  table.ct .c-email { min-width: 190px; }
+  table.ct .c-phone, table.ct .c-mobile, table.ct .c-other { min-width: 130px; }
+  table.ct .c-website { min-width: 150px; }
+  table.ct .c-address { min-width: 220px; }
+  table.ct .c-notes { min-width: 220px; }
+  table.ct .c-date { min-width: 120px; color: #6B7280; font-size: 12px; }
+  table.ct th.sticky, table.ct td.sticky { position: sticky; left: 0; z-index: 2; }
+  table.ct th.sticky { z-index: 4; }
+  table.ct td.sticky { box-shadow: 1px 0 0 #E2DFD6; }
+  .ct-first { display: flex; align-items: stretch; }
+  .ct-star { flex: 0 0 44px; width: 44px; border: none; background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #B9B5A8; padding: 0; }
+  .ct-star.on { color: #CD2027; }
+  tr.is-sponsor td.sticky { background: #FDEFEF; }
+  .ct-del { border: none; background: transparent; width: 44px; min-height: 44px; cursor: pointer; color: #8A93A3; font-size: 11px; font-weight: 700; font-family: inherit; }
+  .ct-del.arm { color: #FFFFFF; background: #CD2027; border-radius: 8px; }
+  tr.flash td { animation: ctflash 1.8s ease-out; }
+  @keyframes ctflash { 0% { background: #D8E6FF; } 100% { background: transparent; } }
+  .ct-empty { padding: 22px 16px; text-align: center; color: #6B7280; font-size: 13.5px; line-height: 1.5; }
+  .ct-toast { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) + 84px); transform: translateX(-50%); background: #1C2230; color: #FFFFFF; padding: 11px 16px; border-radius: 12px; font-size: 13px; line-height: 1.4; max-width: min(92vw, 420px); z-index: 60; display: none; box-shadow: 0 8px 24px rgba(0,0,0,.25); }
+  .ct-toast.show { display: block; }
+
   /* Share modal */
   .share-overlay {
     display: none; position: fixed; inset: 0; background: rgba(20, 24, 34, 0.55);
@@ -325,6 +380,11 @@
           </button>
         </div>
       </div>
+
+      <button class="scan-tile" onclick="showTab('contacts')">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"/><rect x="7" y="9" width="10" height="6" rx="1"/></svg>
+        <span><span class="t">Scan a business card</span><span class="s">Adds it straight to your contacts table</span></span>
+      </button>
 
       <div>
         <div class="list-title">
@@ -589,7 +649,52 @@
       </div>
     </div>
 
+    <!-- CONTACTS (business card scanner) -->
+    <div class="panel" id="panel-contacts">
+      <button class="ct-back" onclick="showTab('home')">&larr; Home</button>
+      <div>
+        <h1 class="section-title">My Contacts</h1>
+        <div class="section-sub">Scan cards into a table. Saved only on this phone.</div>
+      </div>
+
+      <div class="ct-actions">
+        <button class="btn-primary" id="ctScanBtn" type="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="12" r="3"/></svg>Scan card
+        </button>
+        <button class="btn-light" id="ctPickBtn" type="button">From photos</button>
+      </div>
+      <input type="file" id="ctCamInput" accept="image/*" capture="environment" hidden>
+      <input type="file" id="ctPickInput" accept="image/*" hidden>
+      <div class="ct-status" id="ctStatus" role="status" aria-live="polite"></div>
+      <div class="ct-tip" id="ctTip">Lay the card flat, fill the frame, and use good light. <b>Yellow cells</b> are ones the scanner wasn't sure about &mdash; tap any cell to fix it. Tap the star to flag a sponsor lead.</div>
+
+      <div class="ct-tools">
+        <input class="ct-search" id="ctSearch" type="search" placeholder="Search contacts" autocomplete="off">
+        <button class="ct-chip" id="ctSponsorOnly" type="button">Sponsor leads only</button>
+      </div>
+      <div class="ct-count" id="ctCount"></div>
+
+      <div class="ct-wrap" id="ctWrap">
+        <table class="ct" id="ctTable">
+          <thead><tr>
+            <th class="sticky c-name">Sponsor lead / Name</th><th class="c-title">Title</th><th class="c-company">Company</th>
+            <th class="c-email">Email</th><th class="c-phone">Phone</th><th class="c-mobile">Mobile</th><th class="c-other">Other phone</th>
+            <th class="c-website">Website</th><th class="c-address">Address</th><th class="c-notes">Notes</th><th class="c-date">Scanned</th><th></th>
+          </tr></thead>
+          <tbody id="ctBody"></tbody>
+        </table>
+        <div class="ct-empty" id="ctEmpty">No contacts yet. Tap <b>Scan card</b> to add your first one.</div>
+      </div>
+
+      <div class="ct-actions">
+        <button class="btn-light" id="ctExport" type="button">Export CSV</button>
+        <button class="btn-light" id="ctCopy" type="button">Copy table</button>
+      </div>
+    </div>
+
   </div>
+
+  <div class="ct-toast" id="ctToast" role="status"></div>
 
   <div class="tab-bar">
     <button class="tab-btn active" id="tabbtn-home" onclick="showTab('home')">
@@ -663,19 +768,21 @@
 <script src="assets/qrcode.min.js"></script>
 <script>
   // Bumped on every deploy, in lockstep with version.json and sw.js's CACHE name.
-  var APP_VERSION = 17;
+  var APP_VERSION = 18;
 
   function showTab(id) {
     document.querySelectorAll('.panel').forEach(function (p) { p.classList.remove('active'); });
     document.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.remove('active'); });
     document.getElementById('panel-' + id).classList.add('active');
-    document.getElementById('tabbtn-' + id).classList.add('active');
+    var tabBtn = document.getElementById('tabbtn-' + id); // the Contacts screen has no tab button
+    if (tabBtn) tabBtn.classList.add('active');
     document.querySelector('.screen-body').scrollTop = 0;
+    document.dispatchEvent(new CustomEvent('hlsa:tab', { detail: id }));
   }
 
   // Deep link: a URL ending in #partners (used by the Partners "Share link" option)
   // opens straight to that tab instead of Home.
-  var DEEP_LINK_TABS = ['home', 'events', 'sponsors', 'partners', 'news'];
+  var DEEP_LINK_TABS = ['home', 'events', 'sponsors', 'partners', 'news', 'contacts'];
   if (DEEP_LINK_TABS.indexOf(location.hash.slice(1)) !== -1) {
     showTab(location.hash.slice(1));
   }
@@ -1144,6 +1251,643 @@
       safePrompt('Copy this link:', SHARE_URL);
     }
   }
+</script>
+<script id="hlsa-scanner">
+/* HLSA business-card scanner. Photo -> on-device OCR (Tesseract, hosted in assets/tess) ->
+   field parsing -> one row in a local, editable contacts table. Nothing leaves the phone. */
+(function () {
+  'use strict';
+  try {
+    var KEY = 'hlsa_contacts_v1';
+    var COLS = ['name', 'title', 'company', 'email', 'phone', 'mobile', 'other', 'website', 'address', 'notes'];
+    var HEAD = ['Name', 'Title', 'Company', 'Email', 'Phone', 'Mobile', 'Other phone', 'Website', 'Address', 'Notes'];
+    var contacts = [];
+    var workerPromise = null, idleTimer = null, busy = false;
+    var $ = function (id) { return document.getElementById(id); };
+
+    /* ---------- small helpers ---------- */
+    function median(a) { if (!a.length) return 0; var s = a.slice().sort(function (x, y) { return x - y; }); return s[Math.floor(s.length / 2)]; }
+    function mean(a) { return a.length ? a.reduce(function (x, y) { return x + y; }, 0) / a.length : 0; }
+    function letters(s) { return (s || '').replace(/[^A-Za-z]/g, ''); }
+    function digitCount(s) { return ((s || '').match(/[0-9]/g) || []).length; }
+    function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+    function clean(s) {
+      return (s || '').replace(/[|_©®™•·«»—–~]+/g, ' ').replace(/\s+/g, ' ')
+        .replace(/^[^A-Za-z0-9(&+#@]+/, '').replace(/[^A-Za-z0-9.)!?&'"]+$/, '').trim();
+    }
+    var SMALL = { and: 1, of: 1, the: 1, for: 1, at: 1, in: 1, on: 1, a: 1, an: 1, to: 1 };
+    var KEEP_UP = { llc: 1, pllc: 1, llp: 1, lp: 1, pa: 1, pc: 1, usa: 1, hr: 1, it: 1, md: 1, vp: 1, ceo: 1, cfo: 1, coo: 1, cto: 1, cio: 1, cmo: 1, tx: 1, pt: 1, dpt: 1, ot: 1, rn: 1, np: 1, dr: 1, ii: 1, iii: 1 };
+    function titleCase(s) {
+      var l = letters(s); if (!l) return s;
+      if (l.replace(/[^A-Z]/g, '').length / l.length < 0.7) return s;      /* already mixed case: leave alone */
+      return s.toLowerCase().replace(/[a-z][a-z'’]*/g, function (w, i) {
+        var bare = w.replace(/[^a-z]/g, '');
+        if (KEEP_UP[bare]) return w.toUpperCase();
+        if (bare.length <= 3 && !/[aeiou]/.test(bare)) return w.toUpperCase();   /* PHC, TX */
+        if (i > 0 && SMALL[bare]) return w;
+        return w.charAt(0).toUpperCase() + w.slice(1);
+      });
+    }
+    function fmtPhone(d) { return d.slice(0, 3) + '-' + d.slice(3, 6) + '-' + d.slice(6); }
+
+    /* ---------- parsing ---------- */
+    var EMAIL_RE = /[A-Za-z0-9._%+\-]+@[A-Za-z0-9\-]+(?:\.[A-Za-z0-9\-]+)*\.[A-Za-z]{2,}/;
+    var URL_RE = /\b(?:https?:\/\/)?(?:www\.)?[A-Za-z0-9][A-Za-z0-9\-]*(?:\.[A-Za-z0-9\-]+)*\.(?:com|net|org|edu|gov|us|io|co|health|care|info|biz|md|me|app|ai|tv|pro|clinic|dental|law)\b(?:\/[^\s|)]*)?/i;
+    var STREET_RE = /^\W*\d{1,6}\s+(?:[NSEW]\.?\s+)?[A-Za-z0-9.,'\- ]+?\b(?:st|street|rd|road|ave|avenue|blvd|boulevard|dr|drive|ln|lane|way|pkwy|parkway|hwy|highway|loop|ct|court|pl|place|trl|trail|cir|circle|pass|bend|fwy|freeway|expy|expressway|ih|fm|ste|suite|bldg|building|plaza)\b/i;
+    var CITY_RE = /[A-Za-z][A-Za-z .'\-]+,?\s+(?:TX|Tx|Texas|[A-Z]{2})\.?\s+\d{5}(?:-\d{4})?\b/;
+    var SUITE_RE = /^(?:suite|ste\.?|unit|bldg\.?|floor|fl\.?|#)\s*[A-Za-z0-9\-]+$/i;
+    var TITLE_RE = /\b(president|vice\s+president|vp|ceo|cfo|coo|cto|cio|cmo|chief|director|manager|administrator|owner|founder|co-?founder|partner|principal|associate|broker|realtor|agent|advisor|adviser|consultant|representative|executive|supervisor|coordinator|specialist|analyst|engineer|officer|nurse|physician|doctor|therapist|assistant|attorney|counsel|lawyer|accountant|controller|banker|underwriter|recruiter|liaison|educator|trainer|instructor|professor|surgeon|dentist|pharmacist|clinician|practitioner|marketing|sales|operations|relations)\b/i;
+    var COMPANY_RE = /\b(llc|l\.l\.c\.|inc\.?|incorporated|corp\.?|corporation|co\.|company|ltd\.?|llp|pllc|group|services?|hospice|care|therapy|medicine|medical|clinic|health|healthcare|center|centre|hospital|associates|partners|solutions|systems|consulting|advisors|advisory|insurance|bank|realty|real estate|pharmacy|dental|dentistry|law|legal|foundation|institute|staffing|marketing|brokers|brokerage|capital|financial|wealth|travel|rehab|rehabilitation|wellness|laborator(?:y|ies)|labs|pediatrics|family|surgical|surgery|imaging|radiology|urgent|physicians|specialists|nursing|senior|living|mortgage|title|construction|roofing|plumbing|landscaping|electric|design|studio|agency|technologies|technology|software|enterprises|industries|holdings|network|alliance|association|society|ministries|church|school|university|college|palliative|p\.a\.)\b/i;
+    var GENERIC_CO = { services: 1, service: 1, therapy: 1, care: 1, health: 1, hospice: 1, medical: 1, clinic: 1, group: 1, solutions: 1, inc: 1, llc: 1 };
+    var CRED = { pt: 1, dpt: 1, ocs: 1, mha: 1, mba: 1, md: 1, 'do': 1, pa: 1, pac: 1, np: 1, rn: 1, lpn: 1, cpa: 1, phd: 1, dds: 1, dmd: 1, jd: 1, esq: 1, lfache: 1, fache: 1, cpc: 1, cphq: 1, ma: 1, ms: 1, msw: 1, lcsw: 1, rph: 1, pharmd: 1, otr: 1, ot: 1, slp: 1, cscs: 1, fnp: 1, aprn: 1, crna: 1, dnp: 1, pmp: 1, chc: 1, cmpe: 1, mph: 1, mhsa: 1 };
+    var STOP = { the: 1, and: 1, of: 1, 'for': 1, 'with': 1, we: 1, help: 1, at: 1, 'in': 1, on: 1, to: 1, by: 1, our: 1, your: 1, from: 1, get: 1, call: 1, now: 1, free: 1, since: 1, serving: 1 };
+    var GENERIC_MAIL = { gmail: 1, yahoo: 1, outlook: 1, hotmail: 1, icloud: 1, aol: 1, live: 1, msn: 1, comcast: 1, att: 1, sbcglobal: 1, me: 1, protonmail: 1 };
+
+    function credKey(t) { return t.toLowerCase().replace(/[.\-]/g, ''); }
+    function parseName(text) {
+      var t = text.replace(/[|_©®™•·«»]+/g, ' ').replace(/\s+/g, ' ').trim();
+      if (!t || /[0-9@\/]/.test(t) || t.length > 48) return null;
+      var prefix = '', m = t.match(/^(dr|mr|mrs|ms|miss|prof)\.?\s+/i);
+      if (m) { prefix = m[1].charAt(0).toUpperCase() + m[1].slice(1).toLowerCase() + '.'; t = t.slice(m[0].length); }
+      var parts = t.split(/\s*,\s*/), left = parts[0], creds = parts.slice(1).join(' ').split(/[\s,]+/).filter(Boolean);
+      var toks = left.split(/\s+/).filter(Boolean);
+      while (toks.length > 2) {
+        var last = toks[toks.length - 1];
+        if (CRED[credKey(last)] || (creds.length && /^[A-Za-z]{1,3}$/.test(last))) creds.unshift(toks.pop()); else break;
+      }
+      if (toks.length < 2 || toks.length > 4) return null;
+      if (COMPANY_RE.test(left) || TITLE_RE.test(left)) return null;
+      for (var i = 0; i < toks.length; i++) {
+        var k = toks[i];
+        if (STOP[k.toLowerCase()]) return null;
+        if (!(/^[A-Z][A-Za-z'’\-]+\.?$/.test(k) || /^[A-Z]\.$/.test(k))) {
+          if (!(i > 0 && /^(de|del|la|van|von|da|di|bin|al)$/.test(k))) return null;
+        }
+      }
+      var nm = titleCase(toks.join(' '));
+      var hasPT = creds.some(function (x) { return /^(dpt|ocs)$/i.test(x); });
+      creds = creds.map(function (c) { return c.replace(/[.,]/g, ''); }).filter(Boolean).map(function (c) {
+        var up = c.toUpperCase();
+        return up === 'PR' && hasPT ? 'PT' : up;
+      });
+      return { name: (prefix ? prefix + ' ' : '') + nm + (creds.length ? ', ' + creds.join(', ') : ''), hasCreds: creds.length > 0, hasPrefix: !!prefix };
+    }
+    function phoneLabel(before, after) {
+      var b = before.slice(-16), a = after.slice(0, 16), m;
+      if (/\b(fax|facsimile)\s*[:.\-#]?\s*$/i.test(b) || /\bf\s*[:.]\s*$/i.test(b)) return 'fax';
+      if (/\b(cell?[lt]?|cel|mobile|mob|wireless)\s*[:.\-#]?\s*$/i.test(b) || /\bm\s*[:.]\s*$/i.test(b)) return 'cell';
+      if (/\b(tel|telephone|phone|ph|office|direct|main|clinic|work|toll\s*free|tf)\s*[:.\-#]?\s*$/i.test(b) || /\b[po]\s*[:.]\s*$/i.test(b)) return 'office';
+      if ((m = a.match(/^\s*[:.\-–|,]*\s*(fax|cell|mobile|office|direct|main|clinic|work|tel|phone)\b/i))) {
+        var w = m[1].toLowerCase(); return w === 'fax' ? 'fax' : (w === 'cell' || w === 'mobile') ? 'cell' : 'office';
+      }
+      return null;
+    }
+    function rootOf(domain) { return (domain || '').toLowerCase().replace(/^www\./, '').split('.')[0].replace(/[^a-z0-9]/g, ''); }
+
+    function parse(segs) {
+      var res = { emails: [], urls: [], phones: [], f: {} };
+      var roles = segs.map(function () { return null; });
+      segs.forEach(function (s, i) {
+        var t = s.text.replace(/\s*@\s*/g, '@').replace(/,(com|net|org|edu|gov)\b/gi, '.$1');
+        var m = t.match(EMAIL_RE);
+        if (m && !s.low) {
+          /* confidence from the word(s) holding the address, not from an icon sitting next to it */
+          var ew = (s.wc || []).filter(function (w) { return w.t.indexOf('@') !== -1 || /\.[A-Za-z]{2,}$/.test(w.t); });
+          res.emails.push({ v: m[0].toLowerCase().replace(/[.,;]+$/, ''), raw: m[0], c: ew.length ? mean(ew.map(function (w) { return w.c; })) : s.conf });
+          roles[i] = 'contact'; t = t.replace(EMAIL_RE, ' ');
+        }
+        s._t = t;
+      });
+      segs.forEach(function (s, i) {
+        if (s.low) return;
+        var m = s._t.match(URL_RE);
+        if (m) {
+          var u = m[0].replace(/^https?:\/\//i, '').replace(/[\/.,;|)\]]+$/, '');
+          res.urls.push({ v: u.replace(/^([^\/]+)/, function (d) { return d.toLowerCase(); }), raw: u, c: s.conf });
+          roles[i] = 'contact'; s._t = s._t.replace(URL_RE, ' ');
+        }
+      });
+      /* phones: scan the whole text. A line is only joined to the next one when it ends in a
+         hyphen (a number broken across two lines); otherwise newlines keep numbers apart. */
+      var full = '', offs = [];
+      segs.forEach(function (s, i) { offs.push(full.length); full += s.text + (/[\-–]\s*$/.test(s.text) && i < segs.length - 1 ? ' ' : '\n'); });
+      var re = /[0-9OoIl()+.\-– \t]{10,}/g, m2, phoneSeg = {};
+      while ((m2 = re.exec(full))) {
+        var lead = m2[0].search(/\S/); if (lead < 0) continue;
+        var run = m2[0].trim(), start = m2.index + lead, end = start + run.length;
+        /* O / I / l at the edge of a run that touches a letter belong to a word ("Tel", "Office"), not the number */
+        while (run.length && /[OoIl]$/.test(run) && /[A-Za-z]/.test(full.charAt(end))) { run = run.slice(0, -1); end--; }
+        while (run.length && /^[OoIl]/.test(run) && /[A-Za-z]/.test(full.charAt(start - 1))) { run = run.slice(1); start++; }
+        var lead2 = run.search(/\S/); if (lead2 > 0) { run = run.slice(lead2); start += lead2; } run = run.replace(/\s+$/, ''); end = start + run.length;
+        if (digitCount(run) < 7) continue;
+        var sub = /[OoIl]/.test(run);
+        var ds = run.replace(/[Oo]/g, '0').replace(/[Il]/g, '1').replace(/\D/g, '');
+        var chunks = [];
+        if (ds.length === 10) chunks = [ds];
+        else if (ds.length === 11 && ds.charAt(0) === '1') chunks = [ds.slice(1)];
+        else if (ds.length === 20) chunks = [ds.slice(0, 10), ds.slice(10)];
+        if (!chunks.length) continue;
+        var ls = full.lastIndexOf('\n', start - 1) + 1, le = full.indexOf('\n', end); if (le < 0) le = full.length;
+        var label = phoneLabel(full.slice(ls, start), full.slice(end, le));
+        var si = 0; for (var k = 0; k < offs.length; k++) if (offs[k] <= start) si = k;
+        phoneSeg[si] = true;
+        /* confidence from the digit words only, so a stray icon next to the number doesn't lower it */
+        var dw = (segs[si].wc || []).filter(function (w) { return digitCount(w.t) >= 3; });
+        var pconf = Math.max(0, (dw.length ? mean(dw.map(function (w) { return w.c; })) : segs[si].conf) - (sub ? 15 : 0));
+        chunks.forEach(function (d) { res.phones.push({ d: d, label: chunks.length > 1 ? null : label, c: pconf }); });
+      }
+      /* address (decided before generic digit-heavy lines are written off as phone numbers) */
+      var cityIdx = [];
+      segs.forEach(function (s, i) { if (!roles[i] && !phoneSeg[i] && !s.low && CITY_RE.test(s._t) && digitCount(s._t.replace(/\d{5}(-\d{4})?\b/, '')) < 14) { roles[i] = 'addr'; cityIdx.push(i); } });
+      segs.forEach(function (s, i) {
+        if (roles[i] || phoneSeg[i] || s.low) return;
+        var t = s._t.trim();
+        if (STREET_RE.test(t) && digitCount(t) < 14) { roles[i] = 'addr'; return; }
+        if (cityIdx.length && SUITE_RE.test(t)) { roles[i] = 'addr'; return; }
+        if (/^\d{3,6}\s+[A-Za-z]/.test(t) && t.split(/\s+/).length <= 8 && digitCount(t) < 8) {
+          for (var q = 0; q < cityIdx.length; q++) { var cs = segs[cityIdx[q]]; if (cs.y0 > s.y0 && cs.y0 - s.y0 < 3.5 * Math.max(s.h, 12)) { roles[i] = 'addr'; return; } }
+        }
+      });
+      segs.forEach(function (s, i) { if (!roles[i] && (phoneSeg[i] || digitCount(s._t) >= 7)) roles[i] = 'phone'; });
+      var addr = segs.map(function (s, i) { return roles[i] === 'addr' ? s : null; }).filter(Boolean)
+        .sort(function (a, b) { return (a.y0 - b.y0) || (a.x0 - b.x0); });
+      if (addr.length) {
+        var atxt = addr.map(function (s) { return clean(s._t); }).filter(Boolean).join(', ').replace(/\bTx\b/g, 'TX');
+        res.f.address = { v: titleCase(atxt), c: mean(addr.map(function (s) { return s.conf; })) };
+      }
+      /* name / title / company from the remaining ("plain") segments */
+      var plain = segs.filter(function (s, i) { return !roles[i] && !s.low && letters(s._t).length >= 2; });
+      var medH = median(segs.filter(function (s) { return !s.low; }).map(function (s) { return s.h; })) || 20;
+      var titles = plain.filter(function (s) { return TITLE_RE.test(s._t) && s._t.length <= 60 && !/\d/.test(s._t) && !parseName(s._t); });
+      var best = null;
+      plain.forEach(function (s) {
+        var nm = parseName(s._t); if (!nm) return;
+        var adj = titles.some(function (t) { return Math.abs(t.y0 - s.y0) < 3.2 * Math.max(s.h, t.h) && Math.abs(t.x0 - s.x0) < 0.8 * Math.max(s.x1 - s.x0, 80); });
+        var score = (s.h / medH) * 20 + s.conf * 0.2 + (nm.hasCreds ? 12 : 0) + (nm.hasPrefix ? 8 : 0) + (adj ? 25 : 0);
+        if (!best || score > best.score) best = { seg: s, nm: nm, score: score };
+      });
+      if (best) res.f.name = { v: best.nm.name, c: best.seg.conf };
+      var tBest = null;
+      titles.forEach(function (s) {
+        if (best && s === best.seg) return;
+        var d = best ? Math.abs(s.y0 - best.seg.y0) / Math.max(best.seg.h, 12) : 0;
+        if (best && d > 5) return;
+        var sc = -d * 10 + s.conf * 0.1 + (best && s.y0 > best.seg.y0 ? 4 : 0);
+        if (!tBest || sc > tBest.sc) tBest = { seg: s, sc: sc };
+      });
+      if (tBest) res.f.title = { v: titleCase(clean(tBest.seg._t)), c: tBest.seg.conf };
+      var domainRoot = '';
+      if (res.emails[0]) domainRoot = rootOf(res.emails[0].v.split('@')[1]); else if (res.urls[0]) domainRoot = rootOf(res.urls[0].v);
+      var cands = segs.filter(function (s, i) {
+        if (roles[i] || (best && s === best.seg) || (tBest && s === tBest.seg)) return false;
+        var l = letters(s._t); if (l.length < 3 || /\d/.test(s._t) || s._t.split(/\s+/).length > 7) return false;
+        if (s.low) return s.h >= 1.5 * medH && l.length >= 4 && /[aeiouAEIOU]/.test(l) && /^[A-Za-z' &.\-]+$/.test(clean(s._t));
+        if (/^[a-z]{3,}\s/.test(clean(s._t)) || /[+=<>]/.test(s._t)) return false;      /* a tagline, not a company name */
+        return l.length / s._t.replace(/\s/g, '').length >= 0.6;
+      });
+      var cBest = null;
+      cands.forEach(function (s) {
+        var t = clean(s._t), sc = (s.h / medH) * 10 + s.conf * 0.15 - (s.low ? 25 : 0), kw = COMPANY_RE.test(t), dm = false;
+        if (kw) sc += 40;
+        if (domainRoot.length >= 3) {
+          dm = t.toLowerCase().split(/[^a-z0-9]+/).some(function (w) { return w.length >= 3 && domainRoot.indexOf(w) !== -1; });
+          if (dm) sc += 25;
+        }
+        /* only a candidate with a real signal behind it can win: a business word, a match to the
+           email/website domain, or clear, confident, headline-sized type (not giant logo art) */
+        var signal = kw || dm || (s.conf >= 85 && s.h >= 1.2 * medH && s.h <= 3.5 * medH);
+        if (signal && (!cBest || sc > cBest.sc)) cBest = { seg: s, sc: sc, kw: kw, dm: dm };
+      });
+      if (cBest) {
+        var group = [cBest.seg], b = cBest.seg;
+        cands.forEach(function (s) {
+          var isSuffix = /^(inc|llc|ltd|corp|co|pa|pc|lp|llp|pllc)\.?$/i.test(clean(s._t));
+          if (s === b || s.low || s.conf < 50 || (letters(s._t).length < 4 && !isSuffix)) return;      /* never glue logo-art guesses onto a name we are fairly sure of */
+          var gap = s.y0 > b.y0 ? s.y0 - b.y1 : b.y0 - s.y1;
+          var cx1 = (s.x0 + s.x1) / 2, cx2 = (b.x0 + b.x1) / 2;
+          if (gap < 0 || gap > 1.3 * Math.max(b.h, s.h) || Math.abs(cx1 - cx2) > 0.6 * Math.max(s.x1 - s.x0, b.x1 - b.x0)) return;
+          if (COMPANY_RE.test(clean(s._t)) || !COMPANY_RE.test(clean(b._t)) || clean(s._t).split(/\s+/).length <= 2) group.push(s);
+        });
+        group.sort(function (p, q) { return p.y0 - q.y0; });
+        var ctext = titleCase(group.map(function (s) { return clean(s._t); }).join(' ').replace(/\s+/g, ' '));
+        var low = group.some(function (s) { return s.low; });
+        var gen = GENERIC_CO[ctext.toLowerCase()] === 1;
+        res.f.company = { v: ctext, c: Math.min.apply(null, group.map(function (s) { return s.low ? 30 : s.conf; })), generic: gen || low };
+      }
+      return res;
+    }
+
+    /* ---------- combine two OCR passes ---------- */
+    function better(a, b) { if (!a || !a.v) return b; if (!b || !b.v) return a; return b.c > a.c + 8 ? b : a; }
+    function union(list, key) {
+      var out = [];
+      list.forEach(function (x) {
+        var ex = out.filter(function (y) { return y[key] === x[key]; })[0];
+        if (!ex) { out.push(x); return; }
+        if (x.c > ex.c) ex.c = x.c;
+        if (x.label && !ex.label) ex.label = x.label;
+      });
+      return out;
+    }
+    function merge(a, b) {
+      var r = { emails: union(a.emails.concat(b.emails), 'v'), urls: union(a.urls.concat(b.urls), 'v'), phones: union(a.phones.concat(b.phones), 'd'), f: {} };
+      ['name', 'title', 'company', 'address'].forEach(function (k) { r.f[k] = better(a.f[k], b.f[k]); });
+      return r;
+    }
+    /* "usable": found real contact details, or a name / company we can actually trust. Junk from a
+       card the reader can't see (black-on-black, busy artwork) must not become a row. */
+    function hasAny(r) {
+      var n = r.f.name, c = r.f.company, t = r.f.title;
+      return !!(r.emails.length || r.phones.length || r.urls.length || (n && n.v && n.c >= 80 && ((t && t.v) || (c && c.v && !c.generic && c.c >= 80))));
+    }
+    /* take a second, slower look unless the first pass found a name, an email or website, and a phone */
+    function needsMore(r, d) {
+      return !(r.emails.length || r.phones.length) || !(r.f.name && r.f.name.v) || !(r.emails.length || r.urls.length) || d.confidence < 60;
+    }
+
+    function finalize(res) {
+      var rec = { id: uid(), sponsor: false, scanned: new Date().toISOString(), unsure: {} }, u = rec.unsure, f = res.f;
+      COLS.forEach(function (c) { rec[c] = ''; });
+      if (f.name && f.name.v) { rec.name = f.name.v; if (f.name.c < 82) u.name = true; } else u.name = true;
+      if (f.title && f.title.v) { rec.title = f.title.v; if (f.title.c < 80) u.title = true; }
+      var byConf = function (x, y) { return y.c - x.c; };
+      var em = res.emails.slice().sort(byConf)[0], ur = res.urls.slice().sort(byConf)[0];
+      if (em) { rec.email = em.v; if (em.c < 80) u.email = true; }
+      if (ur) { rec.website = ur.v; if (ur.c < 85) u.website = true; }
+      else if (em) { var dom = em.v.split('@')[1]; if (!GENERIC_MAIL[rootOf(dom)]) { rec.website = dom; u.website = true; } }
+      var office = [], cell = [], other = [];
+      res.phones.forEach(function (p) {
+        if (p.label === 'fax') return;
+        var e = { t: fmtPhone(p.d), c: p.c };
+        (p.label === 'cell' ? cell : p.label === 'office' ? office : other).push(e);
+      });
+      var phone = office.shift() || other.shift();
+      if (phone) { rec.phone = phone.t; if (phone.c < 80) u.phone = true; }
+      var mob = cell.shift(); if (mob) { rec.mobile = mob.t; if (mob.c < 80) u.mobile = true; }
+      var rest = office.concat(cell, other);
+      if (rest.length) { rec.other = rest.map(function (e) { return e.t; }).join(' / '); if (rest.some(function (e) { return e.c < 80; })) u.other = true; }
+      if (f.address && f.address.v) { rec.address = f.address.v; if (f.address.c < 80) u.address = true; }
+      var domCompany = '', dm = em ? em.raw.split('@')[1] : (ur ? ur.raw : ''), root = (dm || '').replace(/^www\./i, '').split('.')[0];
+      if (root && !GENERIC_MAIL[root.toLowerCase()]) {
+        root = root.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/[0-9]+$/, '').trim();
+        domCompany = root.charAt(0).toUpperCase() + root.slice(1);
+      }
+      if (f.company && f.company.v && !(f.company.generic && domCompany)) { rec.company = f.company.v; if (f.company.c < 80 || f.company.generic) u.company = true; }
+      else { rec.company = domCompany; u.company = true; }     /* guessed from the email/website: always double-check */
+      return rec;
+    }
+
+    /* ---------- image prep + OCR ---------- */
+    function loadScript(src) {
+      return new Promise(function (res, rej) {
+        if (window.Tesseract) return res();
+        var s = document.createElement('script'); s.src = src; s.onload = function () { res(); };
+        s.onerror = function () { rej(new Error('could not load ' + src)); }; document.head.appendChild(s);
+      });
+    }
+    function onLog(m) {
+      if (!busy || !m) return;
+      if (m.status === 'recognizing text') setStatus('Reading card… ' + Math.round((m.progress || 0) * 100) + '%', true);
+    }
+    function getWorker() {
+      clearTimeout(idleTimer);
+      if (!workerPromise) {
+        workerPromise = loadScript('assets/tess/tesseract.min.js').then(function () {
+          var base = new URL('assets/tess/', location.href).href;
+          return window.Tesseract.createWorker('eng', 1, { workerPath: base + 'worker.min.js', corePath: base, langPath: base, logger: onLog });
+        }).catch(function (e) { workerPromise = null; throw e; });
+      }
+      return workerPromise;
+    }
+    function releaseLater() {
+      clearTimeout(idleTimer);
+      idleTimer = setTimeout(function () {
+        if (workerPromise) { workerPromise.then(function (w) { return w.terminate(); }).catch(function () {}); workerPromise = null; }
+      }, 180000);
+    }
+    function ocr(canvas, psm) {
+      return getWorker().then(function (w) {
+        return w.setParameters({ tessedit_pageseg_mode: String(psm) }).then(function () { return w.recognize(canvas); });
+      }).then(function (r) { return r.data; });
+    }
+    function toSegments(data) {
+      var segs = [];
+      (data.lines || []).forEach(function (line) {
+        var words = (line.words || []).filter(function (w) { return w.text && w.text.trim(); });
+        if (!words.length) return;
+        var lh = Math.max(10, median(words.map(function (w) { return w.bbox.y1 - w.bbox.y0; })));
+        var groups = [[words[0]]];
+        for (var i = 1; i < words.length; i++) {
+          var gap = words[i].bbox.x0 - words[i - 1].bbox.x1;
+          if (gap > Math.max(36, lh * 1.7)) groups.push([words[i]]); else groups[groups.length - 1].push(words[i]);
+        }
+        groups.forEach(function (g) {
+          while (g.length > 1 && g[0].confidence < 55 && g[0].text.length <= 3) g.shift();
+          while (g.length > 1 && g[g.length - 1].confidence < 55 && g[g.length - 1].text.length <= 3) g.pop();
+          var text = g.map(function (w) { return w.text; }).join(' ').replace(/\s+/g, ' ').trim();
+          if (text.replace(/[^A-Za-z0-9]/g, '').length < 2) return;
+          var conf = mean(g.map(function (w) { return w.confidence; }));
+          segs.push({
+            text: text, conf: conf, low: conf < 35,
+            wc: g.map(function (w) { return { t: w.text, c: w.confidence }; }),
+            x0: Math.min.apply(null, g.map(function (w) { return w.bbox.x0; })), y0: Math.min.apply(null, g.map(function (w) { return w.bbox.y0; })),
+            x1: Math.max.apply(null, g.map(function (w) { return w.bbox.x1; })), y1: Math.max.apply(null, g.map(function (w) { return w.bbox.y1; })),
+            h: median(g.map(function (w) { return w.bbox.y1 - w.bbox.y0; }))
+          });
+        });
+      });
+      /* the reader returns lines in no guaranteed order: put them in reading order (rows, then left to right) */
+      var mh = median(segs.map(function (s) { return s.h; })) || 20;
+      segs.forEach(function (s) { s._row = Math.round(((s.y0 + s.y1) / 2) / (0.9 * mh)); });
+      segs.sort(function (a, b) { return (a._row - b._row) || (a.x0 - b.x0); });
+      return segs;
+    }
+    function findCardBox(bmp) {
+      var s = 360 / Math.max(bmp.width, bmp.height), w = Math.max(8, Math.round(bmp.width * s)), h = Math.max(8, Math.round(bmp.height * s));
+      var c = document.createElement('canvas'); c.width = w; c.height = h;
+      var x = c.getContext('2d', { willReadFrequently: true }); x.drawImage(bmp, 0, 0, w, h);
+      var d = x.getImageData(0, 0, w, h).data, bs = [[], [], []], i, j, k;
+      function addPx(xx, yy) { k = (yy * w + xx) * 4; bs[0].push(d[k]); bs[1].push(d[k + 1]); bs[2].push(d[k + 2]); }
+      for (i = 0; i < w; i += 2) { addPx(i, 0); addPx(i, h - 1); }
+      for (i = 0; i < h; i += 2) { addPx(0, i); addPx(w - 1, i); }
+      var bg = bs.map(median), rows = new Uint16Array(h), cols = new Uint16Array(w);
+      for (j = 0; j < h; j++) for (i = 0; i < w; i++) {
+        k = (j * w + i) * 4;
+        if (Math.max(Math.abs(d[k] - bg[0]), Math.abs(d[k + 1] - bg[1]), Math.abs(d[k + 2] - bg[2])) > 45) { rows[j]++; cols[i]++; }
+      }
+      var rt = Math.max(2, w * 0.02), ct = Math.max(2, h * 0.02), y0 = 0, y1 = h - 1, x0 = 0, x1 = w - 1;
+      while (y0 < h && rows[y0] < rt) y0++; while (y1 > y0 && rows[y1] < rt) y1--;
+      while (x0 < w && cols[x0] < ct) x0++; while (x1 > x0 && cols[x1] < ct) x1--;
+      var bw = x1 - x0 + 1, bh = y1 - y0 + 1, area = (bw * bh) / (w * h);
+      if (bw < 20 || bh < 20 || area > 0.88 || area < 0.1) return null;
+      var px = Math.round(bw * 0.05), py = Math.round(bh * 0.07);
+      x0 = Math.max(0, x0 - px); y0 = Math.max(0, y0 - py); x1 = Math.min(w - 1, x1 + px); y1 = Math.min(h - 1, y1 + py);
+      return { x: x0 / s, y: y0 / s, w: (x1 - x0 + 1) / s, h: (y1 - y0 + 1) / s };
+    }
+    /* Measure how far the card is tilted: try small rotations and keep the one where text lines / card
+       edges are sharpest (their row-by-row edge profile is "peakiest"). Returns degrees to rotate by. */
+    function estimateSkew(bmp, box) {
+      var sx = box ? box.x : 0, sy = box ? box.y : 0, sw = box ? box.w : bmp.width, sh = box ? box.h : bmp.height;
+      var s = 480 / Math.max(sw, sh), w = Math.max(16, Math.round(sw * s)), h = Math.max(16, Math.round(sh * s));
+      var src = document.createElement('canvas'); src.width = w; src.height = h; src.getContext('2d').drawImage(bmp, sx, sy, sw, sh, 0, 0, w, h);
+      var tmp = document.createElement('canvas'); tmp.width = w; tmp.height = h; var tx = tmp.getContext('2d', { willReadFrequently: true });
+      function score(deg) {
+        tx.setTransform(1, 0, 0, 1, 0, 0); tx.fillStyle = '#fff'; tx.fillRect(0, 0, w, h);
+        tx.translate(w / 2, h / 2); tx.rotate(deg * Math.PI / 180); tx.drawImage(src, -w / 2, -h / 2);
+        var d = tx.getImageData(0, 0, w, h).data, m0 = Math.round(w * 0.08), total = 0, y, xx;
+        for (y = 1; y < h - 1; y++) {
+          var acc = 0;
+          for (xx = m0; xx < w - m0; xx++) {
+            var up = ((y - 1) * w + xx) * 4, dn = ((y + 1) * w + xx) * 4;
+            acc += Math.abs((d[dn] + d[dn + 1] + d[dn + 2]) - (d[up] + d[up + 1] + d[up + 2]));
+          }
+          total += acc * acc;
+        }
+        return total;
+      }
+      var base = score(0), best = 0, bestS = base, deg;
+      for (deg = -10; deg <= 10; deg += 2) { if (deg === 0) continue; var sc1 = score(deg); if (sc1 > bestS) { bestS = sc1; best = deg; } }
+      var center = best;
+      for (deg = center - 1.5; deg <= center + 1.5; deg += 0.5) { var sc2 = score(deg); if (sc2 > bestS) { bestS = sc2; best = deg; } }
+      return bestS > base * 1.04 ? best : 0;
+    }
+    function prep(bmp, o) {
+      var cr = o.crop, sx = cr ? cr.x : 0, sy = cr ? cr.y : 0, sw = cr ? cr.w : bmp.width, sh = cr ? cr.h : bmp.height;
+      var s = o.target / Math.max(sw, sh), cw = Math.max(1, Math.round(sw * s)), ch = Math.max(1, Math.round(sh * s));
+      var th = (o.angle || 0) * Math.PI / 180, ca = Math.abs(Math.cos(th)), sa = Math.abs(Math.sin(th));
+      var w = Math.round(cw * ca + ch * sa), h = Math.round(cw * sa + ch * ca);
+      var c = document.createElement('canvas'); c.width = w; c.height = h;
+      var x = c.getContext('2d', { willReadFrequently: true });
+      x.imageSmoothingQuality = 'high'; x.fillStyle = '#fff'; x.fillRect(0, 0, w, h);
+      x.save(); x.translate(w / 2, h / 2); x.rotate(th);
+      x.drawImage(bmp, sx, sy, sw, sh, -cw / 2, -ch / 2, cw, ch); x.restore();
+      var id = x.getImageData(0, 0, w, h), d = id.data, n = w * h, i, hist = new Uint32Array(256);
+      for (i = 0; i < d.length; i += 4) { var g = (d[i] * 299 + d[i + 1] * 587 + d[i + 2] * 114) / 1000 | 0; d[i] = g; hist[g]++; }
+      var lo = 0, hi = 255, acc = 0;
+      while (lo < 255 && (acc += hist[lo]) < n * 0.01) lo++;
+      acc = 0; while (hi > 0 && (acc += hist[hi]) < n * 0.01) hi--;
+      var span = Math.max(1, hi - lo);
+      for (i = 0; i < d.length; i += 4) { var v = (d[i] - lo) * 255 / span; d[i] = v < 0 ? 0 : v > 255 ? 255 : v; }
+      if (o.adapt) {
+        /* local (adaptive) threshold: copes with gray / uneven backgrounds */
+        var gs = new Float32Array(n), W1 = w + 1, I = new Float64Array(W1 * (h + 1)), yy, xx, row;
+        for (i = 0; i < n; i++) gs[i] = d[i * 4];
+        for (yy = 0; yy < h; yy++) { row = 0; for (xx = 0; xx < w; xx++) { row += gs[yy * w + xx]; I[(yy + 1) * W1 + xx + 1] = I[yy * W1 + xx + 1] + row; } }
+        var R = Math.max(12, Math.round(Math.min(w, h) * 0.03));
+        for (yy = 0; yy < h; yy++) {
+          var ya = Math.max(0, yy - R), yb = Math.min(h, yy + R + 1);
+          for (xx = 0; xx < w; xx++) {
+            var xa = Math.max(0, xx - R), xb = Math.min(w, xx + R + 1);
+            var sum = I[yb * W1 + xb] - I[ya * W1 + xb] - I[yb * W1 + xa] + I[ya * W1 + xa];
+            var mn = sum / ((xb - xa) * (yb - ya)), val = gs[yy * w + xx] < mn * 0.86 ? 0 : 255, k2 = (yy * w + xx) * 4;
+            d[k2] = d[k2 + 1] = d[k2 + 2] = val;
+          }
+        }
+      } else { for (i = 0; i < d.length; i += 4) { d[i + 1] = d[i + 2] = d[i]; d[i + 3] = 255; } }
+      x.putImageData(id, 0, 0);
+      return c;
+    }
+    function rotate(c, deg) {
+      var r = document.createElement('canvas'); r.width = c.height; r.height = c.width;
+      var x = r.getContext('2d'); x.translate(r.width / 2, r.height / 2); x.rotate(deg * Math.PI / 180); x.drawImage(c, -c.width / 2, -c.height / 2);
+      return r;
+    }
+    async function scanFile(file) {
+      var bmp = await createImageBitmap(file), box = null;
+      try { box = findCardBox(bmp); } catch (e) { box = null; }
+      var ang = 0; try { ang = estimateSkew(bmp, box); } catch (e) { ang = 0; }
+      setStatus('Reading card…', true);
+      var dA = await ocr(prep(bmp, { target: 2000, adapt: false, crop: box, angle: ang }), 11);
+      var res = parse(toSegments(dA));
+      if (needsMore(res, dA)) {
+        setStatus('Taking a closer look…', true);
+        var dB = await ocr(prep(bmp, { target: 2000, adapt: true, crop: box, angle: ang }), 3);
+        res = merge(res, parse(toSegments(dB)));
+        if (!hasAny(res)) {
+          var degs = [90, 270];
+          for (var q = 0; q < degs.length && !hasAny(res); q++) {
+            var dR = await ocr(rotate(prep(bmp, { target: 1600, adapt: false, crop: box, angle: ang }), degs[q]), 3);
+            res = merge(res, parse(toSegments(dR)));
+          }
+        }
+      }
+      if (bmp.close) bmp.close();
+      return hasAny(res) ? finalize(res) : null;
+    }
+
+    /* ---------- storage ---------- */
+    function load() { try { var a = JSON.parse(localStorage.getItem(KEY) || '[]'); return Array.isArray(a) ? a : []; } catch (e) { return []; } }
+    function save() {
+      try { localStorage.setItem(KEY, JSON.stringify(contacts)); return true; }
+      catch (e) { toast('Could not save on this phone (storage is full or blocked). Export your contacts now.'); return false; }
+    }
+
+    /* ---------- UI ---------- */
+    var toastT;
+    function toast(msg) { var t = $('ctToast'); if (!t) return; t.textContent = msg; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(function () { t.classList.remove('show'); }, 4500); }
+    function setStatus(msg, isBusy) { var s = $('ctStatus'); if (!s) return; s.textContent = msg; s.classList.toggle('busy', !!isBusy); }
+    function setBusy(b) { busy = b; $('ctScanBtn').disabled = b; $('ctPickBtn').disabled = b; $('ctScanBtn').style.opacity = b ? '0.6' : ''; }
+    function isUnsure(c, f) { return !!(c.unsure && c.unsure[f]); }
+    function visible() {
+      var q = ($('ctSearch').value || '').trim().toLowerCase(), only = $('ctSponsorOnly').classList.contains('on');
+      return contacts.filter(function (c) {
+        if (only && !c.sponsor) return false;
+        return !q || COLS.some(function (f) { return (c[f] || '').toLowerCase().indexOf(q) !== -1; });
+      });
+    }
+    function updateCount(shown) {
+      var sp = contacts.filter(function (c) { return c.sponsor; }).length, n = contacts.length;
+      var t = n + (n === 1 ? ' contact' : ' contacts') + ' · ' + sp + (sp === 1 ? ' sponsor lead' : ' sponsor leads');
+      if (typeof shown === 'number' && shown !== n) t = 'Showing ' + shown + ' of ' + t;
+      $('ctCount').textContent = t;
+    }
+    function commit(c, f, d) {
+      var v = d.textContent.replace(/\s+/g, ' ').trim();
+      if (v !== (c[f] || '')) { c[f] = v; save(); }
+      if (c.unsure && c.unsure[f]) { delete c.unsure[f]; var td = d.closest('td'); if (td) td.classList.remove('unsure'); save(); }
+    }
+    function makeCell(c, f) {
+      var d = document.createElement('div'); d.className = 'cell'; d.contentEditable = 'true'; d.spellcheck = false;
+      d.setAttribute('role', 'textbox'); d.setAttribute('aria-label', HEAD[COLS.indexOf(f)]); d.textContent = c[f] || '';
+      var t;
+      d.addEventListener('input', function () { clearTimeout(t); t = setTimeout(function () { commit(c, f, d); }, 700); });
+      d.addEventListener('blur', function () { clearTimeout(t); commit(c, f, d); });
+      d.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); d.blur(); } });
+      d.addEventListener('paste', function (e) {
+        e.preventDefault();
+        var tx = (e.clipboardData || window.clipboardData).getData('text') || '';
+        document.execCommand('insertText', false, tx.replace(/\s+/g, ' '));
+      });
+      return d;
+    }
+    function rowFor(c, flash) {
+      var tr = document.createElement('tr'); tr.setAttribute('data-id', c.id);
+      tr.className = (c.sponsor ? 'is-sponsor ' : '') + (flash ? 'flash' : '');
+      var tdN = document.createElement('td'); tdN.className = 'sticky c-name' + (isUnsure(c, 'name') ? ' unsure' : '');
+      var first = document.createElement('div'); first.className = 'ct-first';
+      var star = document.createElement('button'); star.type = 'button'; star.className = 'ct-star' + (c.sponsor ? ' on' : '');
+      star.setAttribute('aria-pressed', c.sponsor ? 'true' : 'false'); star.setAttribute('aria-label', 'Flag as sponsor lead');
+      star.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="' + (c.sponsor ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6-5.4-3-5.4 3 1.2-6-4.5-4.2 6.1-.7L12 3Z"/></svg>';
+      star.addEventListener('click', function () { c.sponsor = !c.sponsor; save(); render(); });
+      first.appendChild(star); first.appendChild(makeCell(c, 'name')); tdN.appendChild(first); tr.appendChild(tdN);
+      COLS.slice(1).forEach(function (f) {
+        var td = document.createElement('td'); td.className = 'c-' + f + (isUnsure(c, f) ? ' unsure' : '');
+        td.appendChild(makeCell(c, f)); tr.appendChild(td);
+      });
+      var tdD = document.createElement('td'); tdD.className = 'c-date';
+      var dd = document.createElement('div'); dd.className = 'cell';
+      try { dd.textContent = new Date(c.scanned).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }); } catch (e) { dd.textContent = ''; }
+      tdD.appendChild(dd); tr.appendChild(tdD);
+      var tdX = document.createElement('td'), del = document.createElement('button'), armT;
+      del.type = 'button'; del.className = 'ct-del'; del.textContent = 'Delete'; del.setAttribute('aria-label', 'Delete this contact');
+      del.addEventListener('click', function () {
+        if (!del.classList.contains('arm')) { del.classList.add('arm'); del.textContent = 'Sure?'; armT = setTimeout(function () { del.classList.remove('arm'); del.textContent = 'Delete'; }, 3000); return; }
+        clearTimeout(armT); contacts = contacts.filter(function (x) { return x.id !== c.id; }); save(); render();
+      });
+      tdX.appendChild(del); tr.appendChild(tdX);
+      return tr;
+    }
+    function render(flashId) {
+      var body = $('ctBody'); body.textContent = '';
+      var list = visible();
+      list.forEach(function (c) { body.appendChild(rowFor(c, c.id === flashId)); });
+      $('ctTable').style.display = list.length ? '' : 'none';
+      var em = $('ctEmpty');
+      em.style.display = list.length ? 'none' : 'block';
+      em.textContent = contacts.length ? 'No matches.' : 'No contacts yet. Tap Scan card to add your first one.';
+      updateCount(list.length);
+    }
+    function findDup(rec) {
+      var digits = function (s) { return (s || '').replace(/\D/g, ''); };
+      return contacts.filter(function (c) {
+        if (rec.email && c.email && rec.email.toLowerCase() === c.email.toLowerCase()) return true;
+        return !!(rec.phone && c.phone && digits(rec.phone) === digits(c.phone));
+      })[0];
+    }
+    async function handleFile(file) {
+      if (!file) return;
+      if (busy) { toast('Still reading the last card…'); return; }
+      setBusy(true);
+      var t0 = Date.now();
+      try {
+        var rec = await scanFile(file);
+        if (!rec) {
+          setStatus("Couldn't read that card.", false);
+          toast("Couldn't read that card. Try again with the card flat, filling the frame, in good light.");
+        } else {
+          var dup = findDup(rec);
+          if (dup) {
+            setStatus('Already in your list: ' + (dup.name || dup.company || dup.email) + '.', false);
+            toast('That card is already saved — showing it.');
+            $('ctSearch').value = ''; $('ctSponsorOnly').classList.remove('on'); render(dup.id);
+          } else {
+            contacts.unshift(rec); save();
+            $('ctSearch').value = ''; $('ctSponsorOnly').classList.remove('on'); render(rec.id);
+            $('ctWrap').scrollTop = 0;
+            var secs = Math.max(1, Math.round((Date.now() - t0) / 1000));
+            var n = Object.keys(rec.unsure).length;
+            setStatus('Added ' + (rec.name || rec.company || 'card') + ' (' + secs + 's).' + (n ? ' Yellow cells need a quick look.' : ''), false);
+          }
+        }
+      } catch (e) {
+        if (window.console) console.error(e);
+        setStatus('The scanner hit a snag. Please try that card again.', false);
+        toast('The scanner hit a snag. Please try again.');
+      } finally { setBusy(false); releaseLater(); }
+    }
+
+    /* ---------- export ---------- */
+    function exportRows() {
+      var head = HEAD.concat(['Sponsor lead', 'Scanned']);
+      var rows = contacts.map(function (c) {
+        var d = ''; try { var dt = new Date(c.scanned); d = dt.getFullYear() + '-' + ('0' + (dt.getMonth() + 1)).slice(-2) + '-' + ('0' + dt.getDate()).slice(-2) + ' ' + ('0' + dt.getHours()).slice(-2) + ':' + ('0' + dt.getMinutes()).slice(-2); } catch (e) {}
+        return COLS.map(function (f) { return c[f] || ''; }).concat([c.sponsor ? 'Yes' : '', d]);
+      });
+      return [head].concat(rows);
+    }
+    function csvCell(v) { v = String(v == null ? '' : v); if (/^[=+\-@\t\r]/.test(v)) v = "'" + v; return /[",\n\r]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }
+    function exportCsv() {
+      if (!contacts.length) { toast('Nothing to export yet.'); return; }
+      var csv = '﻿' + exportRows().map(function (r) { return r.map(csvCell).join(','); }).join('\r\n');
+      var now = new Date(), name = 'HLSA-contacts-' + now.getFullYear() + '-' + ('0' + (now.getMonth() + 1)).slice(-2) + '-' + ('0' + now.getDate()).slice(-2) + '.csv';
+      var blob = new Blob([csv], { type: 'text/csv' }), file = null;
+      try { file = new File([blob], name, { type: 'text/csv' }); } catch (e) { file = null; }
+      if (file && navigator.canShare && navigator.canShare({ files: [file] })) { navigator.share({ files: [file], title: 'HLSA contacts' }).catch(function () {}); return; }
+      var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click();
+      setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 4000);
+    }
+    function copyTable() {
+      if (!contacts.length) { toast('Nothing to copy yet.'); return; }
+      var tsv = exportRows().map(function (r) { return r.map(function (v) { return String(v == null ? '' : v).replace(/[\t\r\n]+/g, ' '); }).join('\t'); }).join('\n');
+      var ok = function () { toast('Copied. Paste into Excel or Google Sheets.'); };
+      if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(tsv).then(ok).catch(function () { fallbackCopy(tsv, ok); }); } else fallbackCopy(tsv, ok);
+    }
+    function fallbackCopy(text, ok) {
+      var ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select();
+      try { if (document.execCommand('copy')) ok(); else toast('Copy failed. Use Export CSV instead.'); } catch (e) { toast('Copy failed. Use Export CSV instead.'); }
+      ta.remove();
+    }
+
+    /* ---------- wire up ---------- */
+    contacts = load();
+    $('ctScanBtn').addEventListener('click', function () { $('ctCamInput').click(); });
+    $('ctPickBtn').addEventListener('click', function () { $('ctPickInput').click(); });
+    ['ctCamInput', 'ctPickInput'].forEach(function (id) {
+      $(id).addEventListener('change', function (e) { var f = e.target.files && e.target.files[0]; e.target.value = ''; handleFile(f); });
+    });
+    var st; $('ctSearch').addEventListener('input', function () { clearTimeout(st); st = setTimeout(function () { render(); }, 120); });
+    $('ctSponsorOnly').addEventListener('click', function () { this.classList.toggle('on'); render(); });
+    $('ctExport').addEventListener('click', exportCsv);
+    $('ctCopy').addEventListener('click', copyTable);
+    document.addEventListener('hlsa:tab', function (e) {
+      if (e.detail === 'contacts') { render(); setTimeout(function () { getWorker().catch(function () {}); }, 500); }
+    });
+    render();
+    if ($('panel-contacts').classList.contains('active')) setTimeout(function () { getWorker().catch(function () {}); }, 500);
+
+    window.HLSAScanner = { scanFile: scanFile, parse: parse, toSegments: toSegments, ocr: ocr, prep: prep, findCardBox: findCardBox, estimateSkew: estimateSkew, finalize: finalize, merge: merge, contacts: function () { return contacts; } };
+  } catch (err) { if (window.console) console.error('Scanner failed to start', err); }
+})();
 </script>
 </body>
 </html>

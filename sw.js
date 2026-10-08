@@ -1,4 +1,7 @@
-const CACHE = "hlsa-app-v17";
+const CACHE = "hlsa-app-v18";
+// The business-card scanner's text reader (assets/tess/, ~6 MB per phone) lives in its own cache
+// that survives app updates, so a new app version never forces another multi-megabyte download.
+const OCR_CACHE = "hlsa-ocr-v1";
 
 // Appends a throwaway query param so the OUTGOING network request has a URL GitHub
 // Pages' CDN has never seen before, guaranteeing a true cache miss there. This is the
@@ -29,7 +32,7 @@ self.addEventListener("install", (event) => {
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
-      Promise.all(keys.filter((key) => key !== CACHE).map((key) => caches.delete(key)))
+      Promise.all(keys.filter((key) => key !== CACHE && key !== OCR_CACHE).map((key) => caches.delete(key)))
     ).then(() => self.clients.claim())
   );
 });
@@ -50,6 +53,20 @@ self.addEventListener("fetch", (event) => {
   // just skips that particular check, which is fine.
   if (req.url.endsWith("version.json")) {
     event.respondWith(fetch(bust(req.url), { cache: "no-store" }));
+    return;
+  }
+
+  // The scanner's reader files never change (pinned versions), so: cache-first, no re-checking.
+  // Once a phone has them, scanning works offline and never re-downloads.
+  if (new URL(req.url).pathname.indexOf("/assets/tess/") !== -1) {
+    event.respondWith(
+      caches.open(OCR_CACHE).then((cache) =>
+        cache.match(req).then((hit) => hit || fetch(req).then((resp) => {
+          if (resp.ok) cache.put(req, resp.clone());
+          return resp;
+        }))
+      )
+    );
     return;
   }
 
