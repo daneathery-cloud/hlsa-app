@@ -283,6 +283,24 @@
   .ct-toast { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) + 84px); transform: translateX(-50%); background: #1C2230; color: #FFFFFF; padding: 11px 16px; border-radius: 12px; font-size: 13px; line-height: 1.4; max-width: min(92vw, 420px); z-index: 60; display: none; box-shadow: 0 8px 24px rgba(0,0,0,.25); }
   .ct-toast.show { display: block; }
 
+  /* in-app camera */
+  .cam { position: fixed; inset: 0; z-index: 90; background: #000; overflow: hidden; }
+  .cam[hidden] { display: none; }
+  .cam video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; background: #000; }
+  .cam-guide { position: absolute; left: 50%; top: 46%; width: min(88vw, 640px); aspect-ratio: 1.75 / 1; transform: translate(-50%, -50%); border: 3px solid rgba(255,255,255,.92); border-radius: 14px; box-shadow: 0 0 0 100vmax rgba(0,0,0,.5); transition: border-color .15s; pointer-events: none; }
+  .cam-guide.ok { border-color: #4ADE80; }
+  .cam-top { position: absolute; top: 0; left: 0; right: 0; display: flex; align-items: center; justify-content: space-between; padding: calc(env(safe-area-inset-top, 0px) + 10px) 14px 10px; color: #fff; z-index: 2; }
+  .cam-title { font-family: 'Sora', sans-serif; font-weight: 700; font-size: 15px; text-shadow: 0 1px 4px rgba(0,0,0,.6); }
+  .cam-close { width: 52px; height: 52px; border-radius: 50%; border: none; background: rgba(0,0,0,.55); color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .cam-hint { position: absolute; left: 0; right: 0; bottom: calc(env(safe-area-inset-bottom, 0px) + 150px); text-align: center; color: #fff; font-size: 14px; font-weight: 600; text-shadow: 0 1px 5px rgba(0,0,0,.8); padding: 0 16px; z-index: 2; }
+  .cam-bottom { position: absolute; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: space-around; padding: 18px 12px calc(env(safe-area-inset-bottom, 0px) + 22px); z-index: 2; background: linear-gradient(transparent, rgba(0,0,0,.55)); }
+  .cam-shutter { width: 78px; height: 78px; border-radius: 50%; border: 4px solid #fff; background: transparent; padding: 4px; cursor: pointer; }
+  .cam-shutter span { display: block; width: 100%; height: 100%; border-radius: 50%; background: #fff; }
+  .cam-shutter:active span { background: #CFCFCF; }
+  .cam-pill { min-width: 96px; min-height: 48px; padding: 0 16px; border-radius: 100px; border: 1px solid rgba(255,255,255,.55); background: rgba(0,0,0,.5); color: #fff; font-size: 13px; font-weight: 700; font-family: inherit; cursor: pointer; }
+  .cam-pill.on { background: #4ADE80; border-color: #4ADE80; color: #0B2A17; }
+  .cam.flash::after { content: ""; position: absolute; inset: 0; background: #fff; opacity: .75; pointer-events: none; }
+
   /* Share modal */
   .share-overlay {
     display: none; position: fixed; inset: 0; background: rgba(20, 24, 34, 0.55);
@@ -661,12 +679,13 @@
         <button class="btn-primary" id="ctScanBtn" type="button">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="12" r="3"/></svg>Scan card
         </button>
-        <button class="btn-light" id="ctPickBtn" type="button">From photos</button>
+        <button class="btn-light" id="ctPickBtn" type="button">Choose photo</button>
       </div>
       <input type="file" id="ctCamInput" accept="image/*" capture="environment" hidden>
       <input type="file" id="ctPickInput" accept="image/*" hidden>
       <div class="ct-status" id="ctStatus" role="status" aria-live="polite"></div>
-      <div class="ct-tip" id="ctTip">Lay the card flat, fill the frame, and use good light. <b>Yellow cells</b> are ones the scanner wasn't sure about &mdash; tap any cell to fix it. Tap the star to flag a sponsor lead.</div>
+      <button class="ct-chip" id="ctNext" type="button" hidden style="width:fit-content;">Scan next card</button>
+      <div class="ct-tip" id="ctTip">Lay the card flat, fill the frame, and use good light. <b>Yellow cells</b> are ones the scanner wasn't sure about &mdash; tap any cell to fix it. Tap the star to flag a sponsor lead. If the camera won't open, <b>Choose photo</b> lets you use your phone's camera app instead.</div>
 
       <div class="ct-tools">
         <input class="ct-search" id="ctSearch" type="search" placeholder="Search contacts" autocomplete="off">
@@ -695,6 +714,24 @@
   </div>
 
   <div class="ct-toast" id="ctToast" role="status"></div>
+
+  <!-- Live camera for the business-card scanner (in-app, so we control the shutter and the exit) -->
+  <div class="cam" id="ctCam" hidden>
+    <video id="ctVideo" playsinline muted autoplay></video>
+    <div class="cam-guide" id="ctGuide"></div>
+    <div class="cam-top">
+      <span class="cam-title">Scan a business card</span>
+      <button type="button" class="cam-close" id="ctCamClose" aria-label="Close camera">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="cam-hint" id="ctCamHint">Fit the card inside the frame</div>
+    <div class="cam-bottom">
+      <button type="button" class="cam-pill" id="ctCamAuto">Auto: on</button>
+      <button type="button" class="cam-shutter" id="ctShutter" aria-label="Take photo"><span></span></button>
+      <button type="button" class="cam-pill" id="ctCamAlt">Choose photo</button>
+    </div>
+  </div>
 
   <div class="tab-bar">
     <button class="tab-btn active" id="tabbtn-home" onclick="showTab('home')">
@@ -768,7 +805,7 @@
 <script src="assets/qrcode.min.js"></script>
 <script>
   // Bumped on every deploy, in lockstep with version.json and sw.js's CACHE name.
-  var APP_VERSION = 18;
+  var APP_VERSION = 19;
 
   function showTab(id) {
     document.querySelectorAll('.panel').forEach(function (p) { p.classList.remove('active'); });
@@ -1563,7 +1600,7 @@
       clearTimeout(idleTimer);
       idleTimer = setTimeout(function () {
         if (workerPromise) { workerPromise.then(function (w) { return w.terminate(); }).catch(function () {}); workerPromise = null; }
-      }, 180000);
+      }, 45000);      /* free the reader's memory soon after use */
     }
     function ocr(canvas, psm) {
       return getWorker().then(function (w) {
@@ -1726,7 +1763,7 @@
     var toastT;
     function toast(msg) { var t = $('ctToast'); if (!t) return; t.textContent = msg; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(function () { t.classList.remove('show'); }, 4500); }
     function setStatus(msg, isBusy) { var s = $('ctStatus'); if (!s) return; s.textContent = msg; s.classList.toggle('busy', !!isBusy); }
-    function setBusy(b) { busy = b; $('ctScanBtn').disabled = b; $('ctPickBtn').disabled = b; $('ctScanBtn').style.opacity = b ? '0.6' : ''; }
+    function setBusy(b) { busy = b; if (b) $('ctNext').hidden = true; $('ctScanBtn').disabled = b; $('ctPickBtn').disabled = b; $('ctScanBtn').style.opacity = b ? '0.6' : ''; }
     function isUnsure(c, f) { return !!(c.unsure && c.unsure[f]); }
     function visible() {
       var q = ($('ctSearch').value || '').trim().toLowerCase(), only = $('ctSponsorOnly').classList.contains('on');
@@ -1814,6 +1851,7 @@
         if (!rec) {
           setStatus("Couldn't read that card.", false);
           toast("Couldn't read that card. Try again with the card flat, filling the frame, in good light.");
+          $('ctNext').hidden = false;
         } else {
           var dup = findDup(rec);
           if (dup) {
@@ -1827,12 +1865,15 @@
             var secs = Math.max(1, Math.round((Date.now() - t0) / 1000));
             var n = Object.keys(rec.unsure).length;
             setStatus('Added ' + (rec.name || rec.company || 'card') + ' (' + secs + 's).' + (n ? ' Yellow cells need a quick look.' : ''), false);
+            $('ctNext').hidden = false;
           }
         }
       } catch (e) {
         if (window.console) console.error(e);
-        setStatus('The scanner hit a snag. Please try that card again.', false);
+        var why = String((e && (e.message || e.name)) || e).slice(0, 90);
+        setStatus('The scanner hit a snag (' + why + '). Please try that card again.', false);
         toast('The scanner hit a snag. Please try again.');
+        $('ctNext').hidden = false;
       } finally { setBusy(false); releaseLater(); }
     }
 
@@ -1868,9 +1909,107 @@
       ta.remove();
     }
 
+    /* ---------- in-app camera: live viewfinder, our own shutter, optional auto-capture ----------
+       (Handing off to the phone's camera app proved unreliable inside an installed web app, so
+       the camera is inside the app: nothing to get stuck in, and Close always works.) */
+    var camStream = null, camTimer = null, camCapturing = false, autoOn = true, prefetched = false;
+    var TEXT_MIN = 0.7, SHARP_MIN = 2.0, STILL_MAX = 3.0;      /* calibrated on real card images vs. walls, tables, wood grain, carpet */
+    try { autoOn = localStorage.getItem('hlsa_cam_auto') !== '0'; } catch (e) { autoOn = true; }
+    function camSupported() { return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia); }
+    function setHint(t, ok) { $('ctCamHint').textContent = t; $('ctGuide').classList.toggle('ok', !!ok); }
+    function reflectAuto() { var b = $('ctCamAuto'); b.classList.toggle('on', autoOn); b.textContent = autoOn ? 'Auto: on' : 'Auto: off'; }
+    /* Looks at the middle of the camera view: how much it changed since the last look (steadiness),
+       how much crisp detail there is, and whether that detail is arranged in text-like rows. */
+    function sampleFrame(v, ctx, W, Hh, prevLum) {
+      var sw = v.videoWidth, sh = v.videoHeight;
+      var rw = sw * 0.84, rh = Math.min(sh * 0.9, rw / 1.75), rx = (sw - rw) / 2, ry = Math.max(0, Math.min(sh - rh, sh * 0.46 - rh / 2));
+      ctx.drawImage(v, rx, ry, rw, rh, 0, 0, W, Hh);
+      var d = ctx.getImageData(0, 0, W, Hh).data, n = W * Hh, lum = new Uint8Array(n), i, x, y;
+      for (i = 0; i < n; i++) lum[i] = (d[i * 4] * 299 + d[i * 4 + 1] * 587 + d[i * 4 + 2] * 114) / 1000;
+      var diff = 99; if (prevLum) { diff = 0; for (i = 0; i < n; i++) diff += Math.abs(lum[i] - prevLum[i]); diff /= n; }
+      var rows = new Float64Array(Hh), tot = 0;
+      for (y = 0; y < Hh; y++) { var rs = 0; for (x = 1; x < W; x++) { var g = Math.abs(lum[y * W + x] - lum[y * W + x - 1]); if (g > 18) rs += g; } rows[y] = rs; tot += rs; }
+      var m = tot / Hh, v2 = 0; for (y = 0; y < Hh; y++) v2 += (rows[y] - m) * (rows[y] - m);
+      return { lum: lum, diff: diff, sharp: tot / n, textiness: m > 0 ? Math.sqrt(v2 / Hh) / m : 0 };
+    }
+    function stopWatch() { if (camTimer) { clearInterval(camTimer); camTimer = null; } }
+    function startWatch() {
+      var v = $('ctVideo'), c = document.createElement('canvas'), W = 256, Hh = 146; c.width = W; c.height = Hh;
+      var ctx = c.getContext('2d', { willReadFrequently: true }), prev = null, good = 0, maxSharp = 0;
+      setHint(autoOn ? 'Fit the card inside the frame' : 'Fit the card inside the frame, then tap the button', false);
+      camTimer = setInterval(function () {
+        if (camCapturing || v.readyState < 2 || !v.videoWidth) return;
+        if (!autoOn) return;
+        var s; try { s = sampleFrame(v, ctx, W, Hh, prev); } catch (e) { return; }
+        prev = s.lum; maxSharp = Math.max(maxSharp * 0.97, s.sharp);
+        var cardLike = s.textiness >= TEXT_MIN && s.sharp >= SHARP_MIN, still = s.diff < STILL_MAX, focused = s.sharp >= 0.85 * maxSharp;
+        if (cardLike && still && focused) good++; else good = Math.max(0, good - 2);
+        setHint(good >= 2 ? 'Hold steady…' : cardLike ? 'Hold still…' : 'Fit the card inside the frame', good >= 2);
+        if (good >= 5) capture(true);
+      }, 230);
+    }
+    function closeCamera() {
+      stopWatch();
+      if (camStream) { try { camStream.getTracks().forEach(function (t) { t.stop(); }); } catch (e) {} camStream = null; }
+      var v = $('ctVideo'); try { v.pause(); } catch (e) {} v.srcObject = null;
+      $('ctCam').hidden = true; camCapturing = false;
+    }
+    async function openCamera() {
+      if (busy) { toast('Still reading the last card…'); return; }
+      $('ctNext').hidden = true;
+      if (!camSupported()) { $('ctCamInput').click(); return; }       /* very old browser: use the phone's camera app */
+      try {
+        var stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' }, width: { ideal: 2560 }, height: { ideal: 1440 } }, audio: false });
+        camStream = stream;
+        var v = $('ctVideo'); v.muted = true; v.setAttribute('playsinline', ''); v.srcObject = stream;
+        $('ctCam').hidden = false; reflectAuto();
+        try { await v.play(); } catch (e) { /* autoplay attribute covers it */ }
+        startWatch();
+      } catch (e) {
+        closeCamera();
+        var why = (e && e.name) || 'error';
+        var msg = why === 'NotAllowedError' ? 'Camera permission is off. Allow the camera for this app in your phone settings, or tap Choose photo.'
+          : why === 'NotFoundError' ? 'No camera was found. Tap Choose photo to use a picture instead.'
+          : 'The camera would not start (' + why + '). Tap Choose photo to use your phone’s camera app instead.';
+        setStatus(msg, false); toast(msg);
+      }
+    }
+    async function capture(auto) {
+      if (camCapturing) return; camCapturing = true; stopWatch();
+      var v = $('ctVideo');
+      if (!v.videoWidth) { camCapturing = false; toast('The camera is not ready yet. Try again in a second.'); return; }
+      var c = document.createElement('canvas'); c.width = v.videoWidth; c.height = v.videoHeight;
+      c.getContext('2d').drawImage(v, 0, 0);
+      $('ctCam').classList.add('flash'); setTimeout(function () { $('ctCam').classList.remove('flash'); }, 140);
+      var blob = await new Promise(function (r) { c.toBlob(r, 'image/jpeg', 0.92); });
+      closeCamera();                                     /* camera off the instant we have the picture */
+      if (blob) handleFile(blob); else toast('Could not capture that. Please try again.');
+    }
+    /* Download the reader's files quietly while the Contacts screen is open (no heavy start-up, so the camera isn't starved). */
+    function prefetchReader() {
+      if (prefetched || !navigator.onLine) return; prefetched = true;
+      var simd = false; try { simd = WebAssembly.validate(new Uint8Array([0, 97, 115, 109, 1, 0, 0, 0, 1, 5, 1, 96, 0, 1, 123, 3, 2, 1, 0, 10, 10, 1, 8, 0, 65, 0, 253, 15, 253, 98, 11])); } catch (e) {}
+      var files = ['tesseract.min.js', 'worker.min.js', simd ? 'tesseract-core-simd-lstm.wasm.js' : 'tesseract-core-lstm.wasm.js', 'eng.traineddata.gz'];
+      (function next(i) {
+        if (i >= files.length) return;
+        fetch('assets/tess/' + files[i]).then(function (r) { return r.blob(); }).catch(function () {}).then(function () { setTimeout(function () { next(i + 1); }, 400); });
+      })(0);
+    }
+
     /* ---------- wire up ---------- */
     contacts = load();
-    $('ctScanBtn').addEventListener('click', function () { $('ctCamInput').click(); });
+    $('ctScanBtn').addEventListener('click', openCamera);
+    $('ctShutter').addEventListener('click', function () { capture(false); });
+    $('ctCamClose').addEventListener('click', closeCamera);
+    $('ctCamAuto').addEventListener('click', function () {
+      autoOn = !autoOn; try { localStorage.setItem('hlsa_cam_auto', autoOn ? '1' : '0'); } catch (e) {}
+      reflectAuto(); stopWatch(); startWatch();
+    });
+    $('ctCamAlt').addEventListener('click', function () { closeCamera(); $('ctPickInput').click(); });
+    $('ctNext').addEventListener('click', openCamera);
+    document.addEventListener('visibilitychange', function () { if (document.hidden) closeCamera(); });
+    window.addEventListener('pagehide', closeCamera);
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeCamera(); });
     $('ctPickBtn').addEventListener('click', function () { $('ctPickInput').click(); });
     ['ctCamInput', 'ctPickInput'].forEach(function (id) {
       $(id).addEventListener('change', function (e) { var f = e.target.files && e.target.files[0]; e.target.value = ''; handleFile(f); });
@@ -1880,12 +2019,12 @@
     $('ctExport').addEventListener('click', exportCsv);
     $('ctCopy').addEventListener('click', copyTable);
     document.addEventListener('hlsa:tab', function (e) {
-      if (e.detail === 'contacts') { render(); setTimeout(function () { getWorker().catch(function () {}); }, 500); }
+      if (e.detail === 'contacts') { render(); setTimeout(function () { if (!camStream) prefetchReader(); }, 3000); }
     });
     render();
-    if ($('panel-contacts').classList.contains('active')) setTimeout(function () { getWorker().catch(function () {}); }, 500);
+    if ($('panel-contacts').classList.contains('active')) setTimeout(function () { if (!camStream) prefetchReader(); }, 3000);
 
-    window.HLSAScanner = { scanFile: scanFile, parse: parse, toSegments: toSegments, ocr: ocr, prep: prep, findCardBox: findCardBox, estimateSkew: estimateSkew, finalize: finalize, merge: merge, contacts: function () { return contacts; } };
+    window.HLSAScanner = { sampleFrame: sampleFrame, openCamera: openCamera, closeCamera: closeCamera, capture: capture, scanFile: scanFile, parse: parse, toSegments: toSegments, ocr: ocr, prep: prep, findCardBox: findCardBox, estimateSkew: estimateSkew, finalize: finalize, merge: merge, contacts: function () { return contacts; } };
   } catch (err) { if (window.console) console.error('Scanner failed to start', err); }
 })();
 </script>

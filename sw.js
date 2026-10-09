@@ -1,4 +1,4 @@
-const CACHE = "hlsa-app-v18";
+const CACHE = "hlsa-app-v19";
 // The business-card scanner's text reader (assets/tess/, ~6 MB per phone) lives in its own cache
 // that survives app updates, so a new app version never forces another multi-megabyte download.
 const OCR_CACHE = "hlsa-ocr-v1";
