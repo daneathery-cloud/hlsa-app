@@ -171,6 +171,14 @@
   }
   .sponsor-note a { color: #1E3864; font-weight: 600; }
 
+  .same-w { width: 112px; box-sizing: border-box; text-align: center; }
+  .cause-card { background: #FFFFFF; border: 1px solid #E9E7E1; border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 6px; }
+  .cause-name { font-size: 15px; font-weight: 700; color: #1C2230; }
+  .cause-sub { font-size: 12px; font-weight: 600; color: #CD2027; }
+  .cause-blurb { font-size: 13px; line-height: 1.5; color: #525C6B; }
+  .cause-link { font-size: 13px; font-weight: 700; color: #1E3864; text-decoration: none; min-height: 44px; display: inline-flex; align-items: center; width: fit-content; }
+  .cause-photo { display: block; border-radius: 12px; overflow: hidden; }
+  .cause-photo img { display: block; width: 100%; height: auto; }
   .community-row { flex-direction: row; align-items: center; gap: 10px; padding: 12px 14px; }
   .dot { width: 8px; height: 8px; border-radius: 50%; background: #CD2027; flex-shrink: 0; }
   .community-row span { font-size: 13px; font-weight: 600; }
@@ -424,15 +432,14 @@
       </div>
 
       <div class="hero-card">
-        <span class="hero-pill" style="background:#CD2027;">Recurring</span>
+        <span class="hero-pill same-w" style="background:#CD2027;">Recurring</span>
         <div class="hero-title">Monthly Networking Mixer</div>
         <div class="hero-meta">
           <div class="row"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9FB1D6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span>Every 2nd Thursday, 5&ndash;8 PM</span></div>
           <div class="row"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9FB1D6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg><span>Marriott San Antonio Airport</span></div>
         </div>
         <div class="hero-actions">
-          <a class="btn-primary" id="rsvpLink" style="text-decoration:none; display:inline-flex; align-items:center;" href="https://lp.constantcontactpages.com/sl/iYP2CGi" target="_blank" rel="noopener">RSVP</a>
-          <button class="btn-ghost">Add to calendar</button>
+          <a class="btn-primary same-w" id="rsvpLink" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center;" href="https://lp.constantcontactpages.com/sl/iYP2CGi" target="_blank" rel="noopener">RSVP</a>
         </div>
       </div>
 
@@ -442,11 +449,13 @@
       </div>
 
       <div>
-        <div class="list-title"><span class="h">Community we support</span></div>
-        <div style="display:flex; flex-direction:column; gap:8px;">
-          <div class="community-row"><div class="dot"></div><span>Walk to End Alzheimer's</span></div>
-          <div class="community-row"><div class="dot"></div><span>Ronald McDonald House Charities SA</span></div>
-          <div class="community-row"><div class="dot"></div><span>Morgan's Inclusion Initiative</span></div>
+        <div class="list-title"><span class="h">Community Support</span></div>
+        <div class="cause-card">
+          <div class="cause-name">Walk to End Alzheimer's</div>
+          <div class="cause-sub">Team Poco Loco &mdash; San Antonio</div>
+          <div class="cause-blurb">The Alzheimer's Association Walk to End Alzheimer's is the world's largest fundraiser for Alzheimer's care, support and research. HLSA promotes our local Poco Loco team.</div>
+          <a class="cause-link" href="https://act.alz.org/site/TR?team_id=1027163&amp;pg=team&amp;fr_id=19959" target="_blank" rel="noopener">Visit the Poco Loco team page</a>
+          <a class="cause-photo" href="https://act.alz.org/site/TR?team_id=1027163&amp;pg=team&amp;fr_id=19959" target="_blank" rel="noopener" aria-label="Team Poco Loco on the Walk to End Alzheimer's site"><img src="assets/poco-loco.jpg" alt="Walk to End Alzheimer's participants holding purple and orange pinwheel flowers" width="300" height="249" loading="lazy"></a>
         </div>
       </div>
     </div>
@@ -805,7 +814,7 @@
 <script src="assets/qrcode.min.js"></script>
 <script>
   // Bumped on every deploy, in lockstep with version.json and sw.js's CACHE name.
-  var APP_VERSION = 19;
+  var APP_VERSION = 20;
 
   function showTab(id) {
     document.querySelectorAll('.panel').forEach(function (p) { p.classList.remove('active'); });
