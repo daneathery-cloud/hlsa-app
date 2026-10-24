@@ -307,6 +307,14 @@
   .cam-shutter:active span { background: #CFCFCF; }
   .cam-pill { min-width: 96px; min-height: 48px; padding: 0 16px; border-radius: 100px; border: 1px solid rgba(255,255,255,.55); background: rgba(0,0,0,.5); color: #fff; font-size: 13px; font-weight: 700; font-family: inherit; cursor: pointer; }
   .cam-pill.on { background: #4ADE80; border-color: #4ADE80; color: #0B2A17; }
+  .cam-count { margin-left: auto; margin-right: 12px; background: #4ADE80; color: #0B2A17; font-weight: 700; font-size: 13px; border-radius: 100px; padding: 5px 12px; }
+  .cam-count:empty { display: none; }
+  .cam-peek { position: absolute; left: 50%; transform: translateX(-50%); bottom: calc(env(safe-area-inset-bottom, 0px) + 190px); max-width: 92vw; background: rgba(0,0,0,.72); color: #fff; font-size: 15px; font-weight: 700; padding: 10px 16px; border-radius: 14px; z-index: 3; display: none; text-align: center; }
+  .cam-peek.show { display: block; }
+  .cam-peek.ok { background: #16A34A; }
+  .cam-peek.warn { background: #B45309; }
+  .cam-guide.busy { animation: camPulse 1s ease-in-out infinite; }
+  @keyframes camPulse { 0%, 100% { border-color: rgba(255,255,255,.92); } 50% { border-color: #4ADE80; } }
   .cam.flash::after { content: ""; position: absolute; inset: 0; background: #fff; opacity: .75; pointer-events: none; }
 
   /* Share modal */
@@ -694,7 +702,7 @@
       <input type="file" id="ctPickInput" accept="image/*" hidden>
       <div class="ct-status" id="ctStatus" role="status" aria-live="polite"></div>
       <button class="ct-chip" id="ctNext" type="button" hidden style="width:fit-content;">Scan next card</button>
-      <div class="ct-tip" id="ctTip">Lay the card flat, fill the frame, and use good light. <b>Yellow cells</b> are ones the scanner wasn't sure about &mdash; tap any cell to fix it. Tap the star to flag a sponsor lead. If the camera won't open, <b>Choose photo</b> lets you use your phone's camera app instead.</div>
+      <div class="ct-tip" id="ctTip">Tap <b>Scan card</b> and hold a card inside the frame (good light, flat, steady) &mdash; it saves itself, then show the next one; tap &times; when you're done. The shutter button is the backup. <b>Yellow cells</b> are ones the scanner wasn't sure about &mdash; tap any cell to fix it. Tap the star to flag a sponsor lead.</div>
 
       <div class="ct-tools">
         <input class="ct-search" id="ctSearch" type="search" placeholder="Search contacts" autocomplete="off">
@@ -729,14 +737,16 @@
     <video id="ctVideo" playsinline muted autoplay></video>
     <div class="cam-guide" id="ctGuide"></div>
     <div class="cam-top">
-      <span class="cam-title">Scan a business card</span>
+      <span class="cam-title">Scan business cards</span>
+      <span class="cam-count" id="ctCamCount"></span>
       <button type="button" class="cam-close" id="ctCamClose" aria-label="Close camera">
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
       </button>
     </div>
+    <div class="cam-peek" id="ctPeek" aria-live="polite"></div>
     <div class="cam-hint" id="ctCamHint">Fit the card inside the frame</div>
     <div class="cam-bottom">
-      <button type="button" class="cam-pill" id="ctCamAuto">Auto: on</button>
+      <button type="button" class="cam-pill" id="ctCamAuto">Auto-scan: on</button>
       <button type="button" class="cam-shutter" id="ctShutter" aria-label="Take photo"><span></span></button>
       <button type="button" class="cam-pill" id="ctCamAlt">Choose photo</button>
     </div>
@@ -814,7 +824,7 @@
 <script src="assets/qrcode.min.js"></script>
 <script>
   // Bumped on every deploy, in lockstep with version.json and sw.js's CACHE name.
-  var APP_VERSION = 20;
+  var APP_VERSION = 21;
 
   function showTab(id) {
     document.querySelectorAll('.panel').forEach(function (p) { p.classList.remove('active'); });
@@ -1308,7 +1318,7 @@
     var COLS = ['name', 'title', 'company', 'email', 'phone', 'mobile', 'other', 'website', 'address', 'notes'];
     var HEAD = ['Name', 'Title', 'Company', 'Email', 'Phone', 'Mobile', 'Other phone', 'Website', 'Address', 'Notes'];
     var contacts = [];
-    var workerPromise = null, idleTimer = null, busy = false;
+    var idleTimer = null, busy = false;
     var $ = function (id) { return document.getElementById(id); };
 
     /* ---------- small helpers ---------- */
@@ -1379,7 +1389,11 @@
       return { name: (prefix ? prefix + ' ' : '') + nm + (creds.length ? ', ' + creds.join(', ') : ''), hasCreds: creds.length > 0, hasPrefix: !!prefix };
     }
     function phoneLabel(before, after) {
-      var b = before.slice(-16), a = after.slice(0, 16), m;
+      var b = before.slice(-16), a = after.slice(0, 22), m;
+      /* numbers for a special purpose (support line, billing, after-hours...) are never "the" phone number */
+      var ALT = /(support|help\s?desk|customer|billing|pager|hotline|emergency|after\s?hours|24\s?\/?\s?7|scheduling|referral|intake|admission|toll\s*free\s*support)/i;
+      if (ALT.test(b.slice(-14)) && /[:.\-#]?\s*$/.test(b)) return 'alt';
+      if (/^\s*[:.\-–|,]*\s*(?:[A-Za-z]+\s+)?(?:support|help\s?desk|customer|billing|pager|hotline|emergency|after\s?hours|scheduling|referral|intake|admission)/i.test(a)) return 'alt';
       if (/\b(fax|facsimile)\s*[:.\-#]?\s*$/i.test(b) || /\bf\s*[:.]\s*$/i.test(b)) return 'fax';
       if (/\b(cell?[lt]?|cel|mobile|mob|wireless)\s*[:.\-#]?\s*$/i.test(b) || /\bm\s*[:.]\s*$/i.test(b)) return 'cell';
       if (/\b(tel|telephone|phone|ph|office|direct|main|clinic|work|toll\s*free|tf)\s*[:.\-#]?\s*$/i.test(b) || /\b[po]\s*[:.]\s*$/i.test(b)) return 'office';
@@ -1488,9 +1502,28 @@
         if (roles[i] || (best && s === best.seg) || (tBest && s === tBest.seg)) return false;
         var l = letters(s._t); if (l.length < 3 || /\d/.test(s._t) || s._t.split(/\s+/).length > 7) return false;
         if (s.low) return s.h >= 1.5 * medH && l.length >= 4 && /[aeiouAEIOU]/.test(l) && /^[A-Za-z' &.\-]+$/.test(clean(s._t));
-        if (/^[a-z]{3,}\s/.test(clean(s._t)) || /[+=<>]/.test(s._t)) return false;      /* a tagline, not a company name */
+        var ct = clean(s._t);
+        if ((/^[a-z]{3,}\s/.test(ct) && ct.split(/\s+/).length >= 4) || /[+=<>]/.test(s._t)) return false;      /* a sentence-like tagline, not a company name */
         return l.length / s._t.replace(/\s/g, '').length >= 0.6;
       });
+      /* The company's own web domain often spells its name out ("ResonantTechnologyPartners.com") while the
+         logo breaks it over several lines ("resonant" / "technology partners"): if neighbouring lines
+         add up to the domain name, that is the company, whatever the type styling. */
+      var domGroup = null;
+      if (domainRoot.length >= 6) {
+        var ordered = cands.filter(function (s) { return s.conf >= 50 && !s.low; }).sort(function (p, q) { return p.y0 - q.y0; });
+        for (var gi = 0; gi < ordered.length; gi++) {
+          var acc = [ordered[gi]];
+          for (var gj = gi; gj < Math.min(ordered.length, gi + 3); gj++) {
+            if (gj > gi) { var pv = ordered[gj - 1], cur = ordered[gj]; if (cur.y0 - pv.y1 > 1.6 * Math.max(pv.h, cur.h)) break; acc.push(cur); }
+            var nrm = acc.map(function (s) { return letters(s._t).toLowerCase(); }).join('');
+            /* exact spelling of the domain, or a leading part of it (>= 8 letters), or the domain plus a short legal tail ("inc") */
+            /* "exact" tolerates a character or two of OCR noise ("sonant" for "resonant") */
+            var exact = nrm === domainRoot || (nrm.length >= 8 && lev(nrm, domainRoot, 3) <= Math.max(1, Math.round(0.12 * domainRoot.length))), okGroup = nrm.length >= 5 && (exact || (nrm.length >= 8 && domainRoot.indexOf(nrm) === 0) || (nrm.indexOf(domainRoot) === 0 && nrm.length - domainRoot.length <= 4));
+            if (okGroup && (!domGroup || (exact && !domGroup.exact) || (exact === domGroup.exact && nrm.length > domGroup.len))) domGroup = { segs: acc.slice(), len: nrm.length, exact: exact };
+          }
+        }
+      }
       var cBest = null;
       cands.forEach(function (s) {
         var t = clean(s._t), sc = (s.h / medH) * 10 + s.conf * 0.15 - (s.low ? 25 : 0), kw = COMPANY_RE.test(t), dm = false;
@@ -1504,11 +1537,22 @@
         var signal = kw || dm || (s.conf >= 85 && s.h >= 1.2 * medH && s.h <= 3.5 * medH);
         if (signal && (!cBest || sc > cBest.sc)) cBest = { seg: s, sc: sc, kw: kw, dm: dm };
       });
-      if (cBest) {
+      if (domGroup) {
+        var dgText = domGroup.segs.map(function (s) { return clean(s._t); }).join(' ').replace(/\s+/g, ' ');
+        dgText = dgText.replace(/(^|\s)([a-z])/g, function (m0, a0, b0) { return a0 + b0.toUpperCase(); });
+        res.f.company = { v: titleCase(dgText), c: Math.min.apply(null, domGroup.segs.map(function (s) { return s.conf; })), generic: false };
+      } else if (cBest) {
         var group = [cBest.seg], b = cBest.seg;
         cands.forEach(function (s) {
           var isSuffix = /^(inc|llc|ltd|corp|co|pa|pc|lp|llp|pllc)\.?$/i.test(clean(s._t));
           if (s === b || s.low || s.conf < 50 || (letters(s._t).length < 4 && !isSuffix)) return;      /* never glue logo-art guesses onto a name we are fairly sure of */
+          /* with a web domain to check against, only join a neighbouring line that shares something with it
+             (so a tagline like "MANAGED IT SOLUTIONS" is not glued onto the company name) */
+          if (domainRoot.length >= 6 && !isSuffix) {
+            var sl = letters(s._t).toLowerCase(), shares = false;
+            for (var g3 = 0; g3 + 3 <= sl.length && !shares; g3++) if (domainRoot.indexOf(sl.slice(g3, g3 + 3)) !== -1) shares = true;
+            if (!shares) return;
+          }
           var gap = s.y0 > b.y0 ? s.y0 - b.y1 : b.y0 - s.y1;
           var cx1 = (s.x0 + s.x1) / 2, cx2 = (b.x0 + b.x1) / 2;
           if (gap < 0 || gap > 1.3 * Math.max(b.h, s.h) || Math.abs(cx1 - cx2) > 0.6 * Math.max(s.x1 - s.x0, b.x1 - b.x0)) return;
@@ -1517,8 +1561,14 @@
         group.sort(function (p, q) { return p.y0 - q.y0; });
         var ctext = titleCase(group.map(function (s) { return clean(s._t); }).join(' ').replace(/\s+/g, ' '));
         var low = group.some(function (s) { return s.low; });
-        var gen = GENERIC_CO[ctext.toLowerCase()] === 1;
-        res.f.company = { v: ctext, c: Math.min.apply(null, group.map(function (s) { return s.low ? 30 : s.conf; })), generic: gen || low };
+        var gen = GENERIC_CO[ctext.toLowerCase()] === 1, cconf = Math.min.apply(null, group.map(function (s) { return s.low ? 30 : s.conf; }));
+        /* the logo word was lost but the domain still has it: "technology partners" + domain "resonanttechnologypartners" */
+        var cl = letters(ctext).toLowerCase();
+        if (domainRoot.length >= 9 && cl.length >= 6 && domainRoot.length - cl.length >= 3 && domainRoot.slice(-cl.length) === cl) {
+          var pre = domainRoot.slice(0, domainRoot.length - cl.length);
+          ctext = pre.charAt(0).toUpperCase() + pre.slice(1) + ' ' + ctext; cconf = Math.min(cconf, 70);
+        }
+        res.f.company = { v: ctext, c: cconf, generic: gen || low };
       }
       return res;
     }
@@ -1551,35 +1601,55 @@
       return !(r.emails.length || r.phones.length) || !(r.f.name && r.f.name.v) || !(r.emails.length || r.urls.length) || d.confidence < 60;
     }
 
+    /* Cheap sanity checks. They never change a value; they only decide whether a cell gets the yellow
+       "please check me" shading, because a confidently-misread digit is the one error the reader can't see. */
+    var AREA = {};
+    '210 214 254 281 325 346 361 409 430 432 469 512 682 713 726 737 806 817 830 832 903 915 936 940 945 956 972 979 800 833 844 855 866 877 888'.split(' ').forEach(function (a) { AREA[a] = 1; });
+    function phoneLooksRight(d) { return d.length === 10 && !!AREA[d.slice(0, 3)] && !/[01]/.test(d.charAt(3)); }
+    var GENERIC_WORDS = {};
+    'physical therapy medical health healthcare hospice care services service group clinic solutions inc llc associates center family medicine practice palliative and of the partners consulting management systems network staffing home rehab rehabilitation wellness pa pc pllc ltd corp co'.split(' ').forEach(function (w) { GENERIC_WORDS[w] = 1; });
+    /* a "company" made only of descriptive words (e.g. the "Physical Therapy" line under a logo) is probably not the name */
+    function allGeneric(s) { var w = (s || '').toLowerCase().split(/[^a-z]+/).filter(Boolean); return w.length > 0 && w.every(function (x) { return GENERIC_WORDS[x]; }); }
+    /* stray symbols or digits inside a word are the signature of a misread */
+    function garbled(s) { return /[()\[\]{}|?\\<>~=*_]/.test(s || '') || /[A-Za-z][0-9][A-Za-z]/.test(s || ''); }
+    function relatedToDomain(company, root) {
+      var c = letters(company).toLowerCase(), r = (root || '').toLowerCase().replace(/[^a-z]/g, '');
+      if (!c || r.length < 5) return true;
+      for (var i = 0; i + 4 <= c.length; i++) if (r.indexOf(c.slice(i, i + 4)) !== -1) return true;
+      for (var j = 0; j + 4 <= r.length; j++) if (c.indexOf(r.slice(j, j + 4)) !== -1) return true;
+      return false;
+    }
     function finalize(res) {
       var rec = { id: uid(), sponsor: false, scanned: new Date().toISOString(), unsure: {} }, u = rec.unsure, f = res.f;
       COLS.forEach(function (c) { rec[c] = ''; });
-      if (f.name && f.name.v) { rec.name = f.name.v; if (f.name.c < 82) u.name = true; } else u.name = true;
-      if (f.title && f.title.v) { rec.title = f.title.v; if (f.title.c < 80) u.title = true; }
+      if (f.name && f.name.v) { rec.name = f.name.v; if (f.name.c < 82 || garbled(f.name.v)) u.name = true; } else u.name = true;
+      if (f.title && f.title.v) { rec.title = f.title.v; if (f.title.c < 80 || garbled(f.title.v)) u.title = true; }
       var byConf = function (x, y) { return y.c - x.c; };
       var em = res.emails.slice().sort(byConf)[0], ur = res.urls.slice().sort(byConf)[0];
       if (em) { rec.email = em.v; if (em.c < 80) u.email = true; }
       if (ur) { rec.website = ur.v; if (ur.c < 85) u.website = true; }
       else if (em) { var dom = em.v.split('@')[1]; if (!GENERIC_MAIL[rootOf(dom)]) { rec.website = dom; u.website = true; } }
-      var office = [], cell = [], other = [];
+      var office = [], cell = [], other = [], alt = [];
       res.phones.forEach(function (p) {
         if (p.label === 'fax') return;
-        var e = { t: fmtPhone(p.d), c: p.c };
-        (p.label === 'cell' ? cell : p.label === 'office' ? office : other).push(e);
+        var e = { t: fmtPhone(p.d), c: p.c, ok: phoneLooksRight(p.d) };
+        (p.label === 'cell' ? cell : p.label === 'office' ? office : p.label === 'alt' ? alt : other).push(e);
       });
       var phone = office.shift() || other.shift();
-      if (phone) { rec.phone = phone.t; if (phone.c < 80) u.phone = true; }
-      var mob = cell.shift(); if (mob) { rec.mobile = mob.t; if (mob.c < 80) u.mobile = true; }
-      var rest = office.concat(cell, other);
-      if (rest.length) { rec.other = rest.map(function (e) { return e.t; }).join(' / '); if (rest.some(function (e) { return e.c < 80; })) u.other = true; }
+      if (phone) { rec.phone = phone.t; if (phone.c < 80 || !phone.ok) u.phone = true; }
+      var mob = cell.shift(); if (mob) { rec.mobile = mob.t; if (mob.c < 80 || !mob.ok) u.mobile = true; }
+      var rest = office.concat(cell, other, alt);
+      if (rest.length) { rec.other = rest.map(function (e) { return e.t; }).join(' / '); if (rest.some(function (e) { return e.c < 80 || !e.ok; })) u.other = true; }
       if (f.address && f.address.v) { rec.address = f.address.v; if (f.address.c < 80) u.address = true; }
       var domCompany = '', dm = em ? em.raw.split('@')[1] : (ur ? ur.raw : ''), root = (dm || '').replace(/^www\./i, '').split('.')[0];
       if (root && !GENERIC_MAIL[root.toLowerCase()]) {
         root = root.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/[0-9]+$/, '').trim();
         domCompany = root.charAt(0).toUpperCase() + root.slice(1);
       }
-      if (f.company && f.company.v && !(f.company.generic && domCompany)) { rec.company = f.company.v; if (f.company.c < 80 || f.company.generic) u.company = true; }
-      else { rec.company = domCompany; u.company = true; }     /* guessed from the email/website: always double-check */
+      if (f.company && f.company.v && !(f.company.generic && domCompany)) {
+        rec.company = f.company.v;
+        if (f.company.c < 80 || f.company.generic || garbled(f.company.v) || allGeneric(f.company.v) || !relatedToDomain(f.company.v, domCompany)) u.company = true;      /* (no check for gmail-style addresses) */
+      } else { rec.company = domCompany; u.company = true; }     /* guessed from the email/website: always double-check */
       return rec;
     }
 
@@ -1595,26 +1665,38 @@
       if (!busy || !m) return;
       if (m.status === 'recognizing text') setStatus('Reading card… ' + Math.round((m.progress || 0) * 100) + '%', true);
     }
-    function getWorker() {
-      clearTimeout(idleTimer);
-      if (!workerPromise) {
-        workerPromise = loadScript('assets/tess/tesseract.min.js').then(function () {
-          var base = new URL('assets/tess/', location.href).href;
-          return window.Tesseract.createWorker('eng', 1, { workerPath: base + 'worker.min.js', corePath: base, langPath: base, logger: onLog });
-        }).catch(function (e) { workerPromise = null; throw e; });
-      }
-      return workerPromise;
+    /* Up to two readers ("slots"): while the camera is scanning live, two looks can be read side by side. */
+    var slots = [{ p: null, busy: false, ready: false }, { p: null, busy: false, ready: false }], slotCount = 1;
+    function makeWorker() {
+      return loadScript('assets/tess/tesseract.min.js').then(function () {
+        var base = new URL('assets/tess/', location.href).href;
+        return window.Tesseract.createWorker('eng', 1, { workerPath: base + 'worker.min.js', corePath: base, langPath: base, logger: onLog });
+      });
     }
+    function slotWorker(i) {
+      if (!slots[i].p) slots[i].p = makeWorker().then(function (w) { slots[i].ready = true; return w; }).catch(function (e) { slots[i].p = null; slots[i].ready = false; throw e; });
+      return slots[i].p;
+    }
+    function getWorker() { clearTimeout(idleTimer); return slotWorker(0); }
     function releaseLater() {
       clearTimeout(idleTimer);
       idleTimer = setTimeout(function () {
-        if (workerPromise) { workerPromise.then(function (w) { return w.terminate(); }).catch(function () {}); workerPromise = null; }
+        slots.forEach(function (s) { if (s.p && !s.busy) { s.p.then(function (w) { return w.terminate(); }).catch(function () {}); s.p = null; s.ready = false; } });
       }, 45000);      /* free the reader's memory soon after use */
     }
-    function ocr(canvas, psm) {
-      return getWorker().then(function (w) {
-        return w.setParameters({ tessedit_pageseg_mode: String(psm) }).then(function () { return w.recognize(canvas); });
-      }).then(function (r) { return r.data; });
+    async function ocr(canvas, psm) {
+      clearTimeout(idleTimer);
+      var i = -1, tries = 0;
+      while (i < 0) {
+        for (var k = 0; k < slotCount; k++) if (!slots[k].busy && (k === 0 || slots[k].ready)) { i = k; break; }
+        if (i < 0) { if (++tries > 1500) throw new Error('reader busy'); await new Promise(function (r) { setTimeout(r, 30); }); }
+      }
+      slots[i].busy = true;
+      try {
+        var w = await slotWorker(i);
+        await w.setParameters({ tessedit_pageseg_mode: String(psm) });
+        return (await w.recognize(canvas)).data;
+      } finally { slots[i].busy = false; }
     }
     function toSegments(data) {
       var segs = [];
@@ -1714,6 +1796,15 @@
       acc = 0; while (hi > 0 && (acc += hist[hi]) < n * 0.01) hi--;
       var span = Math.max(1, hi - lo);
       for (i = 0; i < d.length; i += 4) { var v = (d[i] - lo) * 255 / span; d[i] = v < 0 ? 0 : v > 255 ? 255 : v; }
+      if (o.sharpen) {
+        /* unsharp mask: tightens up slightly soft / out-of-focus text (separable box blur, radius 2) */
+        var sg = new Float32Array(n), sb = new Float32Array(n), sx2, sy2, acc2, rr = 2, cnt;
+        for (i = 0; i < n; i++) sg[i] = d[i * 4];
+        for (sy2 = 0; sy2 < h; sy2++) { acc2 = 0; cnt = 0; for (sx2 = 0; sx2 < Math.min(rr, w); sx2++) { acc2 += sg[sy2 * w + sx2]; cnt++; }
+          for (sx2 = 0; sx2 < w; sx2++) { if (sx2 + rr < w) { acc2 += sg[sy2 * w + sx2 + rr]; cnt++; } if (sx2 - rr - 1 >= 0) { acc2 -= sg[sy2 * w + sx2 - rr - 1]; cnt--; } sb[sy2 * w + sx2] = acc2 / cnt; } }
+        for (sx2 = 0; sx2 < w; sx2++) { acc2 = 0; cnt = 0; for (sy2 = 0; sy2 < Math.min(rr, h); sy2++) { acc2 += sb[sy2 * w + sx2]; cnt++; }
+          for (sy2 = 0; sy2 < h; sy2++) { if (sy2 + rr < h) { acc2 += sb[(sy2 + rr) * w + sx2]; cnt++; } if (sy2 - rr - 1 >= 0) { acc2 -= sb[(sy2 - rr - 1) * w + sx2]; cnt--; } var bl = acc2 / cnt, o2 = sy2 * w + sx2, nv = sg[o2] + 1.1 * (sg[o2] - bl); d[o2 * 4] = nv < 0 ? 0 : nv > 255 ? 255 : nv; } }
+      }
       if (o.adapt) {
         /* local (adaptive) threshold: copes with gray / uneven backgrounds */
         var gs = new Float32Array(n), W1 = w + 1, I = new Float64Array(W1 * (h + 1)), yy, xx, row;
@@ -1760,6 +1851,114 @@
       if (bmp.close) bmp.close();
       return hasAny(res) ? finalize(res) : null;
     }
+
+    /* ---------- live reading: many quick looks that vote on every field ----------
+       One look at a hand-held card is right ~80% of the time, but different looks make DIFFERENT mistakes,
+       so a field that two looks agree on is almost always right. Digits especially. */
+    function lev(a, b, max) {
+      if (a === b) return 0;
+      if (Math.abs(a.length - b.length) > max) return max + 1;
+      var prev = [], cur = [], i, j;
+      for (j = 0; j <= b.length; j++) prev[j] = j;
+      for (i = 1; i <= a.length; i++) {
+        cur[0] = i;
+        for (j = 1; j <= b.length; j++) cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a.charAt(i - 1) === b.charAt(j - 1) ? 0 : 1));
+        var t = prev; prev = cur; cur = t;
+      }
+      return prev[b.length];
+    }
+    function normKey(s) { return (s || '').toLowerCase().replace(/[^a-z0-9]/g, ''); }
+    function closeStr(a, b) { return a === b || lev(a, b, 2) <= (a.length >= 14 ? 2 : 1); }
+    function closeName(a, b) { return a === b || lev(a, b, 4) <= Math.max(1, Math.round(0.18 * Math.max(a.length, b.length))); }
+    function closePhone(a, b) { if (a.length !== b.length) return false; var d = 0; for (var i = 0; i < a.length; i++) if (a.charAt(i) !== b.charAt(i)) d++; return d <= 2; }
+    function Pool() { this.n = 0; this.emails = []; this.urls = []; this.phones = []; this.f = { name: [], title: [], company: [], address: [] }; }
+    function vote(list, key, c, payload, close, label) {
+      if (!key) return;
+      var cl = null, i, v = null;
+      for (i = 0; i < list.length; i++) if (close(list[i].key, key)) { cl = list[i]; break; }
+      if (!cl) { cl = { key: key, total: 0, variants: [] }; list.push(cl); }
+      for (i = 0; i < cl.variants.length; i++) if (cl.variants[i].key === key) { v = cl.variants[i]; break; }
+      if (!v) { v = { key: key, count: 0, sumC: 0, maxC: 0, payload: payload, labels: {} }; cl.variants.push(v); }
+      v.count++; v.sumC += c; cl.total++;
+      if (c >= v.maxC) { v.maxC = c; v.payload = payload; }
+      if (label) v.labels[label] = (v.labels[label] || 0) + 1;
+    }
+    function bestOf(cl) { return cl.variants.slice().sort(function (a, b) { return (b.count - a.count) || (b.maxC - a.maxC); })[0]; }
+    function confOf(v) { return Math.min(99, v.sumC / v.count + 6 * (v.count - 1)); }
+    function labelOf(v) { var best = null, bc = 0; for (var k in v.labels) if (v.labels[k] > bc) { bc = v.labels[k]; best = k; } return best; }
+    Pool.prototype.add = function (res) {
+      var me = this; this.n++;
+      res.emails.forEach(function (e) { vote(me.emails, e.v, e.c, e, closeStr); });
+      res.urls.forEach(function (u) { vote(me.urls, u.v.toLowerCase().replace(/^www\./, ''), u.c, u, closeStr); });
+      res.phones.forEach(function (p) { vote(me.phones, p.d, p.c, p, closePhone, p.label); });
+      ['name', 'title', 'company', 'address'].forEach(function (k) { var x = res.f[k]; if (x && x.v) vote(me.f[k], normKey(x.v), x.c, x, closeName); });
+    };
+    Pool.prototype.merged = function () {
+      var r = { emails: [], urls: [], phones: [], f: {} }, byTotal = function (a, b) { return b.total - a.total; }, looks = this.n;
+      /* digits and addresses seen in only ONE of several looks are unconfirmed: they get the yellow "please check" shading unless that one read was extremely confident */
+      var cf = function (v) { return (looks >= 2 && v.count === 1 && v.maxC < 96) ? Math.min(confOf(v), 78) : confOf(v); };
+      this.emails.slice().sort(byTotal).forEach(function (cl) { var v = bestOf(cl); r.emails.push({ v: v.payload.v, raw: v.payload.raw, c: cf(v), n: v.count }); });
+      this.urls.slice().sort(byTotal).forEach(function (cl) { var v = bestOf(cl); r.urls.push({ v: v.payload.v, raw: v.payload.raw, c: cf(v), n: v.count }); });
+      this.phones.slice().sort(byTotal).forEach(function (cl) { var v = bestOf(cl); r.phones.push({ d: v.payload.d, label: labelOf(v), c: cf(v), n: v.count }); });
+      var f = this.f;
+      Object.keys(f).forEach(function (k) {
+        if (!f[k].length) return;
+        var cl = f[k].slice().sort(function (a, b) { return b.total - a.total || bestOf(b).maxC - bestOf(a).maxC; })[0], v = bestOf(cl);
+        r.f[k] = { v: v.payload.v, c: confOf(v), n: v.count, generic: v.payload.generic };
+      });
+      return r;
+    };
+    /* does this look the same as what the pool holds / as a card we already added? (by email or phone, allowing 1-2 misread characters) */
+    function sameCard(res, emails, phones) {
+      var hit = false;
+      res.emails.forEach(function (e) { emails.forEach(function (k) { if (closeStr(e.v, k)) hit = true; }); });
+      res.phones.forEach(function (p) { phones.forEach(function (k) { if (closePhone(p.d, k)) hit = true; }); });
+      return hit;
+    }
+    function contactKeys(res) { return { emails: res.emails.map(function (e) { return e.v; }), phones: res.phones.map(function (p) { return p.d; }) }; }
+    function readyToSave(pool) {
+      var m = pool.merged(), n = pool.n;
+      if (!hasAny(m)) return false;
+      var phones = m.phones.filter(function (p) { return p.label !== 'fax'; }), em = m.emails[0], nm = m.f.name, co = m.f.company;
+      var hasContact = !!(em || phones.length);
+      var ident = !!(nm && nm.v) || !!(co && co.v && !co.generic && co.c >= 75);
+      /* one look is enough only for a "complete" card: a clear name, an email and a phone number, all confidently read.
+         (Anything less is probably missing something that the next look will fill in.) */
+      var strong = !!(nm && nm.v && nm.c >= 85 && em && em.c >= 90 && phones.length && phones.slice(0, 2).every(function (p) { return p.c >= 90 && phoneLooksRight(p.d); }));
+      if (strong) return true;
+      if (n >= 2 && hasContact && ident) return true;                                          /* two looks: anything seen only once gets shaded */
+      if (n >= 4 && hasContact) return true;                                                   /* best effort; doubtful cells get shaded */
+      if (n >= 6 && hasAny(m)) return true;
+      return false;
+    }
+    /* One look at one frame: find the card, straighten it, read it, parse it. */
+    async function readFrame(src, k) {
+      var box = null, ang = 0;
+      try { box = findCardBox(src); } catch (e) { box = null; }
+      try { ang = estimateSkew(src, box); } catch (e) { ang = 0; }
+      var variant = [{ psm: 11, sharpen: false }, { psm: 6, sharpen: true }, { psm: 11, sharpen: true }, { psm: 3, sharpen: false }][k % 4];
+      var d = await ocr(prep(src, { target: 1600, adapt: false, sharpen: variant.sharpen, crop: box, angle: ang }), variant.psm);
+      return parse(toSegments(d));
+    }
+    function Live() { this.pool = new Pool(); this.k = 0; this.last = null; this.looks = 0; }
+    /* feed one frame; says what to do next: 'same' (card already saved), 'more' (keep looking) or 'save' */
+    Live.prototype.step = async function (src) {
+      var res = await readFrame(src, this.k++);
+      this.looks++;
+      if (this.last && sameCard(res, this.last.emails, this.last.phones)) return { state: 'same' };
+      if (this.pool.n && (res.emails.length || res.phones.length)) {
+        var mine = this.pool.merged(), ke = contactKeys(mine);
+        if ((mine.emails.length || mine.phones.length) && !sameCard(res, ke.emails, ke.phones)) { this.pool = new Pool(); this.k = 1; }   /* a different card came into view */
+      }
+      this.pool.add(res);
+      var m = this.pool.merged();
+      if (readyToSave(this.pool)) {
+        var rec = finalize(m); this.last = contactKeys(m); this.pool = new Pool(); this.k = 0;
+        return { state: 'save', rec: rec };
+      }
+      var ph = m.phones.filter(function (p) { return p.label !== 'fax'; })[0];
+      return { state: 'more', peek: { name: m.f.name && m.f.name.v, company: m.f.company && m.f.company.v, phone: ph && fmtPhone(ph.d), email: m.emails[0] && m.emails[0].v }, looks: this.pool.n };
+    };
 
     /* ---------- storage ---------- */
     function load() { try { var a = JSON.parse(localStorage.getItem(KEY) || '[]'); return Array.isArray(a) ? a : []; } catch (e) { return []; } }
@@ -1918,24 +2117,67 @@
       ta.remove();
     }
 
-    /* ---------- in-app camera: live viewfinder, our own shutter, optional auto-capture ----------
-       (Handing off to the phone's camera app proved unreliable inside an installed web app, so
-       the camera is inside the app: nothing to get stuck in, and Close always works.) */
+    /* ---------- in-app camera: live scanning ----------
+       The camera is inside the app (handing off to the phone's camera app proved unreliable in an installed
+       web app). With Auto-scan on, it keeps reading the card in view, saves each card as soon as the reads
+       agree, then waits for the next one; the shutter button is the manual backup. */
     var camStream = null, camTimer = null, camCapturing = false, autoOn = true, prefetched = false;
-    var TEXT_MIN = 0.7, SHARP_MIN = 2.0, STILL_MAX = 3.0;      /* calibrated on real card images vs. walls, tables, wood grain, carpet */
+    var TEXT_MIN = 0.6, SHARP_MIN = 1.2, MOTION_MAX = 9;      /* loose gates: they only skip empty tables, walls and motion blur */
+    var liveSession = null, inflight = 0, bestFrame = null, prevLum = null, smallCtx = null, addedThisOpen = 0, openedAt = 0, peekTimer = null, crashNote = '';
+    var LIVE_KEY = 'hlsa_live_state', WORKERS_KEY = 'hlsa_live_workers';
+    /* how many readers live scanning may use: 2 on a normal phone, 1 on a weak one, 0 = live scanning off */
+    function liveWorkers() {
+      var n = 2;
+      try { var s = localStorage.getItem(WORKERS_KEY); if (s !== null) n = parseInt(s, 10); else if ((navigator.hardwareConcurrency || 4) < 4) n = 1; } catch (e) {}
+      return isNaN(n) ? 1 : Math.max(0, Math.min(2, n));
+    }
     try { autoOn = localStorage.getItem('hlsa_cam_auto') !== '0'; } catch (e) { autoOn = true; }
+    /* Safety net: if live scanning was started last time but never read a single frame, the phone probably closed
+       the app under memory pressure. Step down one notch each time (2 readers -> 1 -> shutter-only) instead of repeating it. */
+    try {
+      if (localStorage.getItem(LIVE_KEY) === 'trying') {
+        var wn = Math.max(0, liveWorkers() - 1); localStorage.setItem(WORKERS_KEY, String(wn)); localStorage.setItem(LIVE_KEY, 'idle');
+        crashNote = wn > 0 ? 'Auto-scan switched to a lighter mode because the last try closed the app.' : 'Auto-scan was switched off because the last try closed the app. Use the shutter, or tap Auto-scan to try again.';
+      }
+      if (liveWorkers() === 0) autoOn = false;
+    } catch (e) {}
     function camSupported() { return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia); }
     function setHint(t, ok) { $('ctCamHint').textContent = t; $('ctGuide').classList.toggle('ok', !!ok); }
-    function reflectAuto() { var b = $('ctCamAuto'); b.classList.toggle('on', autoOn); b.textContent = autoOn ? 'Auto: on' : 'Auto: off'; }
-    /* Looks at the middle of the camera view: how much it changed since the last look (steadiness),
-       how much crisp detail there is, and whether that detail is arranged in text-like rows. */
-    function sampleFrame(v, ctx, W, Hh, prevLum) {
-      var sw = v.videoWidth, sh = v.videoHeight;
-      var rw = sw * 0.84, rh = Math.min(sh * 0.9, rw / 1.75), rx = (sw - rw) / 2, ry = Math.max(0, Math.min(sh - rh, sh * 0.46 - rh / 2));
+    function reflectAuto() { var b = $('ctCamAuto'); b.classList.toggle('on', autoOn); b.textContent = autoOn ? 'Auto-scan: on' : 'Auto-scan: off'; }
+    function setCount() { $('ctCamCount').textContent = addedThisOpen ? addedThisOpen + ' added' : ''; }
+    function setPeek(t, cls, ms) {
+      var p = $('ctPeek'); clearTimeout(peekTimer);
+      p.textContent = t || ''; p.className = 'cam-peek' + (t ? ' show' : '') + (cls ? ' ' + cls : '');
+      if (t && ms) peekTimer = setTimeout(function () { p.className = 'cam-peek'; p.textContent = ''; }, ms);
+    }
+    /* Where the on-screen card frame sits in the camera's own pixels (the video is scaled "cover" to fill the screen). */
+    function guideRect(v) {
+      var cam = $('ctCam').getBoundingClientRect(), g = $('ctGuide').getBoundingClientRect();
+      var vw = v.videoWidth, vh = v.videoHeight, s = Math.max(cam.width / vw, cam.height / vh);
+      var ox = (cam.width - vw * s) / 2, oy = (cam.height - vh * s) / 2;
+      var x = (g.left - cam.left - ox) / s, y = (g.top - cam.top - oy) / s, w = g.width / s, h = g.height / s;
+      /* read a generous area around the on-screen frame: people never line a card up perfectly, and the
+         card finder trims the background away afterwards */
+      var mx = w * 0.2, my = h * 0.32;
+      x = Math.max(0, x - mx); y = Math.max(0, y - my); w = Math.min(vw - x, w + 2 * mx); h = Math.min(vh - y, h + 2 * my);
+      return { x: x, y: y, w: Math.max(8, w), h: Math.max(8, h) };
+    }
+    function grab(v, rect, maxW) {
+      var s = Math.min(1, maxW / rect.w), c = document.createElement('canvas');
+      c.width = Math.max(8, Math.round(rect.w * s)); c.height = Math.max(8, Math.round(rect.h * s));
+      c.getContext('2d').drawImage(v, rect.x, rect.y, rect.w, rect.h, 0, 0, c.width, c.height);
+      return c;
+    }
+    /* Looks at the card frame: how much it changed since the last look (steadiness), how much crisp detail there
+       is, and whether that detail is arranged in text-like rows. Cheap (a 256-pixel-wide copy). */
+    function sampleFrame(v, ctx, W, Hh, prevLum2, rect) {
+      var sw = v.videoWidth, sh = v.videoHeight, rx, ry, rw, rh;
+      if (rect) { rx = rect.x; ry = rect.y; rw = rect.w; rh = rect.h; }
+      else { rw = sw * 0.84; rh = Math.min(sh * 0.9, rw / 1.75); rx = (sw - rw) / 2; ry = Math.max(0, Math.min(sh - rh, sh * 0.46 - rh / 2)); }
       ctx.drawImage(v, rx, ry, rw, rh, 0, 0, W, Hh);
       var d = ctx.getImageData(0, 0, W, Hh).data, n = W * Hh, lum = new Uint8Array(n), i, x, y;
       for (i = 0; i < n; i++) lum[i] = (d[i * 4] * 299 + d[i * 4 + 1] * 587 + d[i * 4 + 2] * 114) / 1000;
-      var diff = 99; if (prevLum) { diff = 0; for (i = 0; i < n; i++) diff += Math.abs(lum[i] - prevLum[i]); diff /= n; }
+      var diff = 99; if (prevLum2) { diff = 0; for (i = 0; i < n; i++) diff += Math.abs(lum[i] - prevLum2[i]); diff /= n; }
       var rows = new Float64Array(Hh), tot = 0;
       for (y = 0; y < Hh; y++) { var rs = 0; for (x = 1; x < W; x++) { var g = Math.abs(lum[y * W + x] - lum[y * W + x - 1]); if (g > 18) rs += g; } rows[y] = rs; tot += rs; }
       var m = tot / Hh, v2 = 0; for (y = 0; y < Hh; y++) v2 += (rows[y] - m) * (rows[y] - m);
@@ -1943,25 +2185,76 @@
     }
     function stopWatch() { if (camTimer) { clearInterval(camTimer); camTimer = null; } }
     function startWatch() {
-      var v = $('ctVideo'), c = document.createElement('canvas'), W = 256, Hh = 146; c.width = W; c.height = Hh;
-      var ctx = c.getContext('2d', { willReadFrequently: true }), prev = null, good = 0, maxSharp = 0;
-      setHint(autoOn ? 'Fit the card inside the frame' : 'Fit the card inside the frame, then tap the button', false);
-      camTimer = setInterval(function () {
-        if (camCapturing || v.readyState < 2 || !v.videoWidth) return;
-        if (!autoOn) return;
-        var s; try { s = sampleFrame(v, ctx, W, Hh, prev); } catch (e) { return; }
-        prev = s.lum; maxSharp = Math.max(maxSharp * 0.97, s.sharp);
-        var cardLike = s.textiness >= TEXT_MIN && s.sharp >= SHARP_MIN, still = s.diff < STILL_MAX, focused = s.sharp >= 0.85 * maxSharp;
-        if (cardLike && still && focused) good++; else good = Math.max(0, good - 2);
-        setHint(good >= 2 ? 'Hold steady…' : cardLike ? 'Hold still…' : 'Fit the card inside the frame', good >= 2);
-        if (good >= 5) capture(true);
-      }, 230);
+      stopWatch(); bestFrame = null; prevLum = null;
+      if (!smallCtx) { var c = document.createElement('canvas'); c.width = 256; c.height = 146; smallCtx = c.getContext('2d', { willReadFrequently: true }); }
+      setHint(autoOn ? 'Hold the card inside the frame' : 'Fit the card inside the frame, then tap the button', false);
+      if (autoOn) camTimer = setInterval(liveTick, 200);
+    }
+    function liveTick() {
+      var v = $('ctVideo');
+      if (camCapturing || !camStream || v.readyState < 2 || !v.videoWidth) return;
+      var now = Date.now();
+      if (now - openedAt > 150000) { closeCamera(); toast('Camera closed to save battery. Tap Scan card to keep going.'); return; }
+      var rect = guideRect(v), s;
+      try { s = sampleFrame(v, smallCtx, 256, 146, prevLum, rect); } catch (e) { return; }
+      var moving = s.diff > MOTION_MAX; prevLum = s.lum;
+      var cardLike = s.textiness >= TEXT_MIN && s.sharp >= SHARP_MIN;
+      if (cardLike && !moving) {
+        /* keep the sharpest recent frame; the reader takes whichever is freshest and crispest when it is free */
+        if (!bestFrame || s.sharp > bestFrame.sharp || now - bestFrame.t > 800) { try { bestFrame = { sharp: s.sharp, t: now, canvas: grab(v, rect, 1800) }; } catch (e) {} }
+        if (!inflight) setHint('Reading… hold steady', true);
+      } else if (!inflight) setHint(moving ? 'Hold still…' : 'Hold the card inside the frame', false);
+      if (inflight < slotCount && bestFrame && now - bestFrame.t < 1500 && (inflight === 0 || slots[1].ready)) { var f = bestFrame; bestFrame = null; runLook(f.canvas); }
+    }
+    async function runLook(canvas) {
+      inflight++; $('ctGuide').classList.add('busy');
+      try {
+        if (!liveSession) liveSession = new Live();
+        var out = await liveSession.step(canvas);
+        try { localStorage.setItem(LIVE_KEY, 'ok'); } catch (e) {}
+        if (!camStream) return;
+        if (out.state === 'save') onLiveSave(out.rec);
+        else if (out.state === 'same') setHint('Added — show the next card, or tap × when done', false);
+        else {
+          var p = out.peek, bits = [p.name || p.company, p.phone || p.email].filter(Boolean);
+          setPeek(bits.length ? bits.join(' · ') + ' …' : 'Reading…', '', 0);
+        }
+      } catch (e) {
+        if (window.console) console.error(e);
+        if (camStream) setHint('Trouble reading — try the shutter button', false);
+      } finally { inflight--; if (!inflight) $('ctGuide').classList.remove('busy'); }
+    }
+    function onLiveSave(rec) {
+      var dup = findDup(rec);
+      if (dup) { setPeek('Already saved: ' + (dup.name || dup.company || dup.email || 'this card'), 'warn', 2600); setHint('Show the next card, or tap × when done', false); return; }
+      contacts.unshift(rec); save(); addedThisOpen++; setCount();
+      render(rec.id);
+      setPeek('✓ Added ' + (rec.name || rec.company || 'card') + (Object.keys(rec.unsure).length ? ' (check yellow cells)' : ''), 'ok', 2600);
+      setHint('Show the next card, or tap × when done', false);
+      try { if (navigator.vibrate) navigator.vibrate(40); } catch (e) {}
     }
     function closeCamera() {
-      stopWatch();
-      if (camStream) { try { camStream.getTracks().forEach(function (t) { t.stop(); }); } catch (e) {} camStream = null; }
+      stopWatch(); bestFrame = null; prevLum = null;
+      if (camStream) { try { camStream.getTracks().forEach(function (t) { t.stop(); }); } catch (e) {} camStream = null; releaseLater(); }
       var v = $('ctVideo'); try { v.pause(); } catch (e) {} v.srcObject = null;
-      $('ctCam').hidden = true; camCapturing = false;
+      slotCount = 1;
+      $('ctCam').hidden = true; camCapturing = false; setPeek('', '', 0);
+      var n = addedThisOpen; addedThisOpen = 0;
+      if (n) { setStatus(n + (n === 1 ? ' card' : ' cards') + ' added. Yellow cells need a quick look.', false); $('ctNext').hidden = false; }
+    }
+    function beginLive() {
+      /* start the reader while the user is lining up the card, so the first look isn't waiting on it */
+      try { localStorage.setItem(LIVE_KEY, 'trying'); } catch (e) {}
+      var want = liveWorkers(); if (want < 1) { want = 1; try { localStorage.setItem(WORKERS_KEY, '1'); } catch (e) {} }
+      slotCount = want;
+      getWorker().then(function () {
+        /* the second reader loads only after the first is ready, so the phone isn't asked to do everything at once */
+        if (slotCount > 1 && camStream) setTimeout(function () { if (camStream && slotCount > 1) slotWorker(1).catch(function () { slotCount = 1; }); }, 400);
+      }).catch(function () {
+        try { localStorage.setItem(LIVE_KEY, 'idle'); } catch (e2) {}
+        autoOn = false; reflectAuto(); stopWatch();
+        if (camStream) { setHint('Auto-scan could not start — tap the button to take a photo', false); toast('Auto-scan could not start. You can still use the shutter button.'); }
+      });
     }
     async function openCamera() {
       if (busy) { toast('Still reading the last card…'); return; }
@@ -1970,10 +2263,14 @@
       try {
         var stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' }, width: { ideal: 2560 }, height: { ideal: 1440 } }, audio: false });
         camStream = stream;
+        try { var tr = stream.getVideoTracks()[0]; if (tr && tr.applyConstraints) tr.applyConstraints({ advanced: [{ focusMode: 'continuous' }] }).catch(function () {}); } catch (e) {}
         var v = $('ctVideo'); v.muted = true; v.setAttribute('playsinline', ''); v.srcObject = stream;
-        $('ctCam').hidden = false; reflectAuto();
+        $('ctCam').hidden = false; reflectAuto(); openedAt = Date.now(); addedThisOpen = 0; setCount(); setPeek('', '', 0);
+        liveSession = new Live();
         try { await v.play(); } catch (e) { /* autoplay attribute covers it */ }
         startWatch();
+        if (autoOn) setTimeout(function () { if (camStream && autoOn) beginLive(); }, 600);
+        if (crashNote) { toast(crashNote); crashNote = ''; }
       } catch (e) {
         closeCamera();
         var why = (e && e.name) || 'error';
@@ -1986,7 +2283,7 @@
     async function capture(auto) {
       if (camCapturing) return; camCapturing = true; stopWatch();
       var v = $('ctVideo');
-      if (!v.videoWidth) { camCapturing = false; toast('The camera is not ready yet. Try again in a second.'); return; }
+      if (!v.videoWidth) { camCapturing = false; toast('The camera is not ready yet. Try again in a second.'); startWatch(); return; }
       var c = document.createElement('canvas'); c.width = v.videoWidth; c.height = v.videoHeight;
       c.getContext('2d').drawImage(v, 0, 0);
       $('ctCam').classList.add('flash'); setTimeout(function () { $('ctCam').classList.remove('flash'); }, 140);
@@ -2012,7 +2309,7 @@
     $('ctCamClose').addEventListener('click', closeCamera);
     $('ctCamAuto').addEventListener('click', function () {
       autoOn = !autoOn; try { localStorage.setItem('hlsa_cam_auto', autoOn ? '1' : '0'); } catch (e) {}
-      reflectAuto(); stopWatch(); startWatch();
+      reflectAuto(); startWatch(); if (autoOn) beginLive();
     });
     $('ctCamAlt').addEventListener('click', function () { closeCamera(); $('ctPickInput').click(); });
     $('ctNext').addEventListener('click', openCamera);
@@ -2033,7 +2330,7 @@
     render();
     if ($('panel-contacts').classList.contains('active')) setTimeout(function () { if (!camStream) prefetchReader(); }, 3000);
 
-    window.HLSAScanner = { sampleFrame: sampleFrame, openCamera: openCamera, closeCamera: closeCamera, capture: capture, scanFile: scanFile, parse: parse, toSegments: toSegments, ocr: ocr, prep: prep, findCardBox: findCardBox, estimateSkew: estimateSkew, finalize: finalize, merge: merge, contacts: function () { return contacts; } };
+    window.HLSAScanner = { readers: function () { return { count: slotCount, ready: slots.map(function (s) { return s.ready; }), busy: slots.map(function (s) { return s.busy; }) }; }, Live: Live, readFrame: readFrame, Pool: Pool, readyToSave: readyToSave, grab: grab, guideRect: guideRect, sampleFrame: sampleFrame, openCamera: openCamera, closeCamera: closeCamera, capture: capture, scanFile: scanFile, parse: parse, toSegments: toSegments, ocr: ocr, prep: prep, findCardBox: findCardBox, estimateSkew: estimateSkew, finalize: finalize, merge: merge, contacts: function () { return contacts; } };
   } catch (err) { if (window.console) console.error('Scanner failed to start', err); }
 })();
 </script>
